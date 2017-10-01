@@ -1,0 +1,57 @@
+.file {
+    display: inline-block;
+    width: 86px;
+    height: 83px;
+    margin: 11px;
+    border: 1px solid #cacaca;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.icon {
+    width: 70%;
+    height: 70%;
+    margin-left: 15%;
+    background: url("../img/default.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.title {
+    margin: 2% 9%;
+    font-size: 0.9em;
+}
+
+.event-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* formats */
+.drive {
+    background: url("../img/drive.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.folder {
+    background: url("../img/folder.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.png,
+.gif,
+.bmp,
+.jpg,
+.JPG {
+    background: url("../img/picture.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
