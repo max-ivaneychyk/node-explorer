@@ -17,6 +17,7 @@ window.addEventListener('load', function () {
     }
 
     function fileTemplate(file, path, format) {
+        console.log(format);
         return `<div class="file">
                   <div class= "${format} icon"></div> 
                   <h3 class="title"> ${file} </h3>
