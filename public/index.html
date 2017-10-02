@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/contextMenu.css">
 </head>
 <body>
 
+<nav id="context-menu" class="context-menu">
+    <ul class="context-menu__items">
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Open"><i class="fa fa-eye"></i> Open</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Copy"><i class="fa fa-edit"></i> Copy</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="Delete"><i class="fa fa-times"></i> Delete </a>
+        </li>
+    </ul>
+</nav>
 
+<script src="js/contextMenu.js"></script>
+<script src="./js/ajax.js"></script>
 <script src="./js/main.js"></script>
 </body>
 </html>

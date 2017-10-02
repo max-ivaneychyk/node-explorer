@@ -6,7 +6,6 @@ let express = require("express");
 let cmd = require('./modules/cmd');
 require('./modules/ee');
 
-
 // создаем объект приложения
 let app = express();
 // создаем парсер для данных application/x-www-form-urlencoded
