@@ -123,14 +123,26 @@
         });
     }
 
+    function chooseFile(el) {
+        var _class = 'choose';
+        var elements = document.getElementsByClassName(_class);
+        // clear
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].classList.remove(_class);
+        }
+        // choose one
+        el.classList.add(_class);
+    }
+
     /**
      * Listens for click events.
      */
     function clickListener() {
         document.addEventListener( "click", function(e) {
-            var clickeElIsLink = clickInsideElement( e, contextMenuLinkClassName );
+            var clickeElIsLink = clickInsideElement( e, taskItemClassName );
 
             if ( clickeElIsLink ) {
+                chooseFile(clickeElIsLink);
                 e.preventDefault();
                 menuItemListener( clickeElIsLink );
             } else {
@@ -217,7 +229,7 @@
      * @param {HTMLElement} link The link that was clicked
      */
     function menuItemListener( link ) {
-        console.log( "Task ID - " + taskItemInContext.getAttribute("data-id") + ", Task action - " + link.getAttribute("data-action"));
+        console.log( "Task ID - " );
         toggleMenuOff();
     }
 
