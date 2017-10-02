@@ -77,7 +77,6 @@
     var contextMenuActive = "context-menu--active";
 
     var taskItemClassName = "event-layer";
-    var taskItemInContext;
 
     var clickCoords;
     var clickCoordsX;
@@ -88,9 +87,6 @@
     var menuState = 0;
     var menuWidth;
     var menuHeight;
-    var menuPosition;
-    var menuPositionX;
-    var menuPositionY;
 
     var windowWidth;
     var windowHeight;
@@ -110,9 +106,10 @@
      */
     function contextListener() {
         document.addEventListener( "contextmenu", function(e) {
-            taskItemInContext = clickInsideElement( e, taskItemClassName );
+            var taskItemInContext = clickInsideElement( e, taskItemClassName );
 
             if ( taskItemInContext ) {
+                chooseFile(taskItemInContext);
                 e.preventDefault();
                 toggleMenuOn();
                 positionMenu(e);
