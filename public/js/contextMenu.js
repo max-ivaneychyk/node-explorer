@@ -127,6 +127,10 @@
         for (var i = 0; i < elements.length; i++) {
             elements[i].classList.remove(_class);
         }
+
+        if (!el) {
+            return false;
+        }
         // choose one
         el.classList.add(_class);
     }
@@ -138,8 +142,9 @@
         document.addEventListener( "click", function(e) {
             var clickeElIsLink = clickInsideElement( e, taskItemClassName );
 
+            chooseFile(clickeElIsLink);
+
             if ( clickeElIsLink ) {
-                chooseFile(clickeElIsLink);
                 e.preventDefault();
                 menuItemListener( clickeElIsLink );
             } else {
