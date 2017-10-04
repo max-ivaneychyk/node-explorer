@@ -1,4 +1,4 @@
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
 
     "use strict";
 
@@ -10,14 +10,14 @@ window.addEventListener('load', function() {
      * @param {String} className The class name to check against
      * @return {Boolean}
      */
-    function clickInsideElement( e, className ) {
+    function clickInsideElement(e, className) {
         var el = e.srcElement || e.target;
 
-        if ( el.classList.contains(className) ) {
+        if (el.classList.contains(className)) {
             return el;
         } else {
-            while ( el = el.parentNode ) {
-                if ( el.classList && el.classList.contains(className) ) {
+            while (el = el.parentNode) {
+                if (el.classList && el.classList.contains(className)) {
                     return el;
                 }
             }
@@ -69,30 +69,29 @@ window.addEventListener('load', function() {
     var menuState = 0;
 
 
-
     menu.addEventListener('click', function (e) {
         let el = e.target;
         let command = el.getAttribute('data-action');
-        if(!command)return;
+        if (!command)return;
         app.event.emit(command);
     });
 
     /**
      * Listens for contextmenu events.
      */
-     document.addEventListener( "contextmenu", function(e) {
-         var taskItemInContext = clickInsideElement( e, taskItemClassName );
+    document.addEventListener("contextmenu", function (e) {
+        var taskItemInContext = clickInsideElement(e, taskItemClassName);
 
-         if ( taskItemInContext ) {
-             chooseFile(taskItemInContext);
-             e.preventDefault();
-             app.event.emit('open-context-menu');
-             positionMenu(e);
-         } else {
-             taskItemInContext = null;
-             app.event.emit('close-context-menu');
-         }
-     });
+        if (taskItemInContext) {
+            chooseFile(taskItemInContext);
+            e.preventDefault();
+            app.event.emit('open-context-menu');
+            positionMenu(e);
+        } else {
+            taskItemInContext = null;
+            app.event.emit('close-context-menu');
+        }
+    });
 
     function chooseFile(el) {
         var _class = 'choose';
@@ -113,17 +112,17 @@ window.addEventListener('load', function() {
      * Listens for click events.
      */
     function clickListener() {
-        document.addEventListener( "click", function(e) {
-            var clickeElIsLink = clickInsideElement( e, taskItemClassName );
+        document.addEventListener("click", function (e) {
+            var clickeElIsLink = clickInsideElement(e, taskItemClassName);
 
             chooseFile(clickeElIsLink);
 
-            if ( clickeElIsLink ) {
+            if (clickeElIsLink) {
                 e.preventDefault();
-                menuItemListener( clickeElIsLink );
-            } else if (!e.target.closest('a[data-action]') ) {
+                menuItemListener(clickeElIsLink);
+            } else if (!e.target.closest('a[data-action]')) {
                 var button = e.which || e.button;
-                if ( button === 1 ) {
+                if (button === 1) {
                     app.event.emit('close-context-menu');
                 }
             }
@@ -134,8 +133,8 @@ window.addEventListener('load', function() {
      * Listens for keyup events.
      */
     function keyupListener() {
-        window.onkeyup = function(e) {
-            if ( e.keyCode === 27 ) {
+        window.onkeyup = function (e) {
+            if (e.keyCode === 27) {
                 app.event.emit('close-context-menu');
             }
         }
@@ -145,7 +144,7 @@ window.addEventListener('load', function() {
      * Window resize event listener
      */
     function resizeListener() {
-        window.onresize = function(e) {
+        window.onresize = function (e) {
             app.event.emit('close-context-menu');
         };
     }
@@ -154,9 +153,9 @@ window.addEventListener('load', function() {
      * Turns the custom context menu on.
      */
     app.event.on('open-context-menu', function () {
-        if ( menuState !== 1 ) {
+        if (menuState !== 1) {
             menuState = 1;
-            menu.classList.add( contextMenuActive );
+            menu.classList.add(contextMenuActive);
         }
 
         app.event.once.oneOf([
@@ -171,11 +170,20 @@ window.addEventListener('load', function() {
                 return false;
             }
 
-            let chooseFiles = document.getElementsByClassName('choose');
+            let chooseElements = document.getElementsByClassName('choose');
             let triggerEvent = data._eventName.split('-');
+            let chooseFiles = [];
+            for (let a = 0; a < chooseElements.length; a++) {
+                let el = chooseElements[a];
+                let path = el.getAttribute('data-path');
+                let absolutePath = location.hash.slice(1) + path;
+                if (path) {
+                    chooseFiles.push(absolutePath);
+                }
+            }
             // тригерим событие и отправляем файлы на обработку
             app.event.emit(triggerEvent[triggerEvent.length - 1], {
-                files: Array.prototype.slice.call(chooseFiles, 0)
+                files: chooseFiles
             });
             // скрываем меню
             app.event.emit('close-context-menu');
@@ -186,9 +194,9 @@ window.addEventListener('load', function() {
      * Turns the custom context menu off.
      */
     app.event.on('close-context-menu', function () {
-        if ( menuState !== 0 ) {
+        if (menuState !== 0) {
             menuState = 0;
-            menu.classList.remove( contextMenuActive );
+            menu.classList.remove(contextMenuActive);
         }
     });
 
@@ -208,13 +216,13 @@ window.addEventListener('load', function() {
         let windowWidth = window.innerWidth;
         let windowHeight = window.innerHeight;
 
-        if ( (windowWidth - clickCoordsX) < menuWidth ) {
+        if ((windowWidth - clickCoordsX) < menuWidth) {
             menu.style.left = windowWidth - menuWidth + "px";
         } else {
             menu.style.left = clickCoordsX + "px";
         }
 
-        if ( (windowHeight - clickCoordsY) < menuHeight ) {
+        if ((windowHeight - clickCoordsY) < menuHeight) {
             menu.style.top = windowHeight - menuHeight + "px";
         } else {
             menu.style.top = clickCoordsY + "px";
@@ -226,22 +234,22 @@ window.addEventListener('load', function() {
      *
      * @param {HTMLElement} link The link that was clicked
      */
-    function menuItemListener( link ) {
-        console.log( "Task ID - " , link);
+    function menuItemListener(link) {
+        console.log("Task ID - ", link);
         app.event.emit('close-context-menu');
     }
 
     /**
      * Initialise our application's code.
      */
-      clickListener();
-      keyupListener();
-      resizeListener();
+    clickListener();
+    keyupListener();
+    resizeListener();
 
 
-      app.event.on('delete', function (data) {
-          ajax('command/', {'files': data.files}, function (list) {
+    app.event.on('delete', function (data) {
+        ajax('command/', {'files': data.files, 'event': data._eventName}, function (list) {
 
-          });
-      })
+        });
+    })
 });

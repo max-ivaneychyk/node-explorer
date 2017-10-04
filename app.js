@@ -117,7 +117,7 @@ ee.on('rename-file', function (data) {
 
 // todo cool
 ee.on('delete', function (data) {
-    let files = data.files || [];
+    let files = JSON.parse(data.files || '[]');
     files.forEach(function (filename) {
         fs.unlink(filename);
     });
