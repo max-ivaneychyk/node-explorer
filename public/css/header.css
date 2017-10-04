@@ -1,0 +1,27 @@
+header li {
+    display: inline-block;
+    cursor: pointer;
+    margin-right: 20px;
+
+}
+
+header menu {
+    margin: 0;
+}
+
+header {
+    border-bottom: 1px solid #ebebeb;
+    background: white;
+    position: relative;
+    background: rgba(255, 255, 255, 0.86);
+    z-index: 2;
+    top: 0;
+    width: 100%;
+    display: block;
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -ms-sticky;
+    position: -o-sticky;
+    position: sticky;
+
+}

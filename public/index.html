@@ -5,9 +5,19 @@
     <title>Web Explorer</title>
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/contextMenu.css">
+    <link rel="stylesheet" href="./css/header.css">
 </head>
 <body>
 
+<header>
+    <menu>
+        <li><p data-command="add-folder"> Новая папка </p></li>
+        <li><p> Вверх </p></li>
+        <li><p> Обновить</p></li>
+    </menu>
+</header>
+
+<!-- Mouse Context Menu -->
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
@@ -31,5 +41,7 @@
 <script src="js/contextMenu.js"></script>
 <script src="./js/ajax.js"></script>
 <script src="js/ls.js"></script>
+<script src="js/head.js"></script>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ window.addEventListener('load', function () {
     let ajax = window.ajax;
     let explorer = document.createElement('div');
 
+    explorer.classList.add('explorer');
     document.body.appendChild(explorer);
 
 
@@ -51,7 +52,7 @@ window.addEventListener('load', function () {
                 }
             });
 
-            explorer.innerHTML = template;
+            explorer.innerHTML = template || '<div class="center-page"> Папка пуста </div>';
         });
     }
 
