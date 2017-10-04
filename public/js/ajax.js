@@ -6,11 +6,13 @@ window.ajax = function ajax(url, data, callback) {
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     for (let key in data) {
         if (data.hasOwnProperty(key)) {
-            str += ( key + '=' + data[key] + '&');
+            let val = data[key].push ? JSON.stringify(data[key]) : data[key];
+            str += ( key + '=' + val + '&');
         }
     }
     // кодируем символы + в дате
     str = str.replace(/\+/gim, '$plus');
+    debugger
     xhr.send(encodeURI(str)); // (1)
 
     xhr.onreadystatechange = function() { // (3)
