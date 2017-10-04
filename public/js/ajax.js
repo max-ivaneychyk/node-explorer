@@ -1,15 +1,15 @@
-function ajax(url, data, callback) {
-    var xhr = new XMLHttpRequest();
+window.ajax = function ajax(url, data, callback) {
+    let xhr = new XMLHttpRequest();
+    let str = '';
 
     xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    let str = '';
     for (let key in data) {
         if (data.hasOwnProperty(key)) {
             str += ( key + '=' + data[key] + '&');
         }
     }
-
+    // кодируем символы + в дате
     str = str.replace(/\+/gim, '$plus');
     xhr.send(encodeURI(str)); // (1)
 
@@ -22,5 +22,5 @@ function ajax(url, data, callback) {
             callback(JSON.parse(xhr.responseText));
         }
     }
-}
+};
 
