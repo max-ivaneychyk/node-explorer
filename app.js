@@ -116,8 +116,9 @@ ee.on('rename-file', function (data) {
 });
 
 // todo cool
-ee.on('delete-file', function (data) {
-    ;['D://node/node-explorer/del.txt'].forEach(function (filename) {
+ee.on('delete', function (data) {
+    let files = data.files || [];
+    files.forEach(function (filename) {
         fs.unlink(filename);
     });
     data.callback();
@@ -150,7 +151,8 @@ app.post('/ls/', urlencodedParser, function (req, res) {
 
 app.post('/command/', urlencodedParser, function (req, res) {
     const events = [
-        'create-folder'
+        'create-folder',
+        'delete'
     ];
 
     if (!req.body) return res.sendStatus(400);
@@ -163,8 +165,11 @@ app.post('/command/', urlencodedParser, function (req, res) {
         return;
     }
 
+    console.log(req.body);
+
     ee.emit(eventName, {
         dir: req.body.dir,
+        files: req.body.files,
         callback: function (status) {
             let data = JSON.stringify({status: status});
             res.setHeader('Content-Type', 'application/json');

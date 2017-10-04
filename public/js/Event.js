@@ -3,11 +3,11 @@
  * Методы: {@link event.addEvent}, {@link event.hasEvent}, {@link event.on}, {@link event.once}, {@link event.onDel}, {@link event.getEventList},
  */
 
+window.app = {};
 (function (app) {
     app.event = {};
 	var event = app.event;
 	var events = {};
-
 
 
 	/**
@@ -224,6 +224,6 @@
 		return events;
 	};
 
-})(window);
+})(window.app);
 
 
