@@ -1,10 +1,17 @@
-function ajax(url, callback) {
+function ajax(url, data, callback) {
     var xhr = new XMLHttpRequest();
 
-    xhr.open('POST', 'ls/'  , true);
+    xhr.open('POST', url, true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    url = url.replace(/\+/gim, '$plus');
-    xhr.send(encodeURI(url)); // (1)
+    let str = '';
+    for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+            str += ( key + '=' + data[key] + '&');
+        }
+    }
+
+    str = str.replace(/\+/gim, '$plus');
+    xhr.send(encodeURI(str)); // (1)
 
     xhr.onreadystatechange = function() { // (3)
         if (xhr.readyState != 4) return;

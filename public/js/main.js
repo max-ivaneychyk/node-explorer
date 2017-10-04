@@ -27,7 +27,7 @@ window.addEventListener('load', function () {
 
     function updateExplorer() {
         let hash = location.hash.slice(1);
-        ajax('url=' +  hash + '', function (list) {
+        ajax('ls/', {'url': hash}, function (list) {
             if(list.error) {
                 history.back();
                 console.log(list.error);

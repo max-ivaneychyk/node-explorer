@@ -148,6 +148,32 @@ app.post('/ls/', urlencodedParser, function (req, res) {
 
 });
 
+app.post('/command/', urlencodedParser, function (req, res) {
+    const events = [
+        'create-folder'
+    ];
+
+    if (!req.body) return res.sendStatus(400);
+
+    let eventName = req.body.event;
+    if (events.indexOf(eventName) === -1) {
+        let data = JSON.stringify({status: 'error', desc: 'Bad code in command'});
+        res.setHeader('Content-Type', 'application/json');
+        res.end(data);
+        return;
+    }
+
+    ee.emit(eventName, {
+        dir: req.body.dir,
+        callback: function (status) {
+            let data = JSON.stringify({status: status});
+            res.setHeader('Content-Type', 'application/json');
+            res.end(data);
+        }
+    });
+
+});
+
 
 // определяем обработчик для маршрута "/"
 app.get("/", function (request, response) {
