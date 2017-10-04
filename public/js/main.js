@@ -4,18 +4,6 @@ window.addEventListener('load', function () {
 
 
 
-    function openFile(path, format) {
-        format = format.toLowerCase();
-
-        if(['png', 'jpg', 'jpeg', 'gif'].indexOf(format) !== -1) {
-            let image = new Image ();
-            image.src = path;
-
-            document.body.appendChild(image);
-        }
-
-    }
-
     function fileTemplate(file, path, format) {
         console.log(format);
         return `<div class="file">
@@ -27,15 +15,13 @@ window.addEventListener('load', function () {
 
     function getFileFormat(fileName) {
         let partsName = fileName.split('.');
-        return partsName.length > 1 ? partsName[partsName.length - 1] : false;
+        let format = fileName[fileName.length -1] === '/' ? 'folder' : partsName[partsName.length - 1];
+        return format;
     }
 
     let detect = {
-        isFile: function (fileName) {
-            return fileName.indexOf('.') !== -1;
-        },
-        isDrive: function (fileName) {
-            return fileName.indexOf(':') !== -1;
+        isDrive: function (fileData) {
+            return fileData.mounted;
         }
     };
 
@@ -46,17 +32,16 @@ window.addEventListener('load', function () {
             let template = '';
             list.forEach(function (file) {
                 if (detect.isDrive(file)) {
-                    let path = file + '//'
-                    template += fileTemplate(file, path, 'drive');
+                    let path = file.mounted + '//';
+                    template += fileTemplate(file.mounted, path, 'drive');
 
-                 } else if (detect.isFile(file)) {
-                    let format = getFileFormat(file);
-                    let path = file ;
-                    template += fileTemplate(file, path, format);
+                 } else if (file.format === 'file') {
+                    let format = getFileFormat(file.name);
+                    template += fileTemplate(file.name, file.name, format);
 
                 } else {
-                    let path = file + '/'
-                    template += fileTemplate(file, path, 'folder');
+                    let path = file.name + '/';
+                    template += fileTemplate(file.name, path, 'folder');
                 }
             });
 
@@ -84,7 +69,7 @@ window.addEventListener('load', function () {
       let path = elem.getAttribute('data-path');
       let format = getFileFormat(path);
 
-       if (format) {
+       if (format !== 'folder') {
         //   openFile(location.hash.slice(1) + path, format);
            return;
        }

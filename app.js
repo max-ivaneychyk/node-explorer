@@ -1,6 +1,7 @@
 let bodyParser = require("body-parser");
 let diskinfo = require('diskinfo');
 let fsExtra = require('fs-extra');
+let path = require('path');
 let fs = require('fs');
 
 // подключение express
@@ -14,35 +15,49 @@ let app = express();
 // создаем парсер для данных application/x-www-form-urlencoded
 let urlencodedParser = bodyParser.urlencoded({extended: false});
 
-ee.on('get-files-from-dir', function (data) {
-    let list = [];
-    let path = data.path;
-    console.log(path);
-    fs.readdirSync(path).forEach(file => {
-        list.push(file);
-    });
-
-    data.callback(list);
+///////////////     DISKS   INFO    ///////////////////////////
+let disks = [];
+diskinfo.getDrives(function (err, aDrives) {
+    disks = aDrives;
 });
+
 
 ee.on('get-disks', function (data) {
-// GET DISK
-    diskinfo.getDrives(function(err, aDrives) {
-        let disks = [];
-        for (var i = 0; i < aDrives.length; i++) {
-            // console.log('Drive ' + aDrives[i].filesystem);
-            // console.log('blocks ' + aDrives[i].blocks);
-            // console.log('used ' + aDrives[i].used);
-            // console.log('available ' + aDrives[i].available);
-            // console.log('capacity ' + aDrives[i].capacity);
-            // console.log('mounted ' + aDrives[i].mounted);
-            disks.push(aDrives[i].mounted);
-            // console.log('-----------------------------------------');
-        }
+    // GET DISK
+    data.callback(disks);
+});
 
-        data.callback(disks);
+
+ee.on('get-files-from-dir', function (data) {
+    let currentDirPath = data.path;
+    let list = [];
+
+    fs.readdir(currentDirPath, function (err, files) {
+        if (err) {
+            throw new Error(err);
+        }
+        files.forEach(function (name) {
+            // .SYS  не обрабативаем, нет прав
+            var filePath = path.join(currentDirPath, name);
+            var stat;
+            try {
+                stat = fs.statSync(filePath);
+            } catch (errFile) {
+                console.log('Cant read system file ', errFile);
+                return;
+            }
+
+            if (stat.isFile()) {
+                list.push({name: name, stat: stat, format: 'file'});
+            } else if (stat.isDirectory()) {
+                list.push({name: name, stat: stat, format: 'directory'});
+            }
+        });
+        // send data to client
+        data.callback(list);
     });
 });
+
 
 // СОЗДАТЬ ДИРЕКТОРИЮ
 ee.on('create-folder', function (data) {
@@ -74,8 +89,6 @@ ee.on('path-exists', function (data) {
 }});*/
 
 
-
-
 ee.on('ensure-dir', function (data) {
     let dir = data.dir;
 // With Promises:
@@ -100,7 +113,7 @@ ee.on('rename-file', function (data) {
 
 // todo cool
 ee.on('delete-file', function (data) {
-    ;['D://node/node-explorer/del.txt'].forEach(function(filename) {
+    ;['D://node/node-explorer/del.txt'].forEach(function (filename) {
         fs.unlink(filename);
     });
     data.callback();
@@ -116,28 +129,19 @@ ee.on('delete-folder', function (data) {
 });
 
 
-
-
-app.post('/path/', urlencodedParser, function (req, res) {
-    if(!req.body) return res.sendStatus(400);
+app.post('/ls/', urlencodedParser, function (req, res) {
+    if (!req.body) return res.sendStatus(400);
     let url = req.body.url;
+    let eventName = url === 'drivers' ? 'get-disks' : 'get-files-from-dir';
 
-    if(url === 'drivers') {
-       ee.emit('get-disks', {
-         callback: function (list) {
-             let disks = JSON.stringify(list);
+    ee.emit(eventName, {
+        path: url, callback: function (list) {
+            list = JSON.stringify(list);
+            res.setHeader('Content-Type', 'application/json');
+            res.end(list);
+        }
+    });
 
-            res.setHeader('Content-Type', 'application/json');
-            res.send(disks);
-         }
-       });
-    } else {
-        ee.emit('get-files-from-dir', {path: url, callback: function (list) {
-           list = JSON.stringify(list);
-            res.setHeader('Content-Type', 'application/json');
-            res.end( list );
-        }});
-    }
 });
 
 
@@ -150,6 +154,6 @@ app.get("/", function (request, response) {
 
 app.use(express.static(__dirname + "/public"));
 // начинаем прослушивать подключения на 3000 порту
-//app.listen(3000);
+app.listen(3000);
 
 

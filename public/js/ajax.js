@@ -1,7 +1,7 @@
 function ajax(url, callback) {
     var xhr = new XMLHttpRequest();
 
-    xhr.open('POST', 'path/'  , true);
+    xhr.open('POST', 'ls/'  , true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
     xhr.send(encodeURI(url)); // (1)
 
