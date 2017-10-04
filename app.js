@@ -29,12 +29,16 @@ ee.on('get-disks', function (data) {
 
 
 ee.on('get-files-from-dir', function (data) {
-    let currentDirPath = data.path;
+    // кодирование плюсов
+    let currentDirPath = data.path.replace(/\$plus/gim, '+');
     let list = [];
 
+    console.log(currentDirPath);
     fs.readdir(currentDirPath, function (err, files) {
         if (err) {
-            throw new Error(err);
+            console.log(err);
+            data.callback({error: err});
+            return;
         }
         files.forEach(function (name) {
             // .SYS  не обрабативаем, нет прав

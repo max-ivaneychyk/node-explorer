@@ -2,7 +2,8 @@ function ajax(url, callback) {
     var xhr = new XMLHttpRequest();
 
     xhr.open('POST', 'ls/'  , true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    url = url.replace(/\+/gim, '$plus');
     xhr.send(encodeURI(url)); // (1)
 
     xhr.onreadystatechange = function() { // (3)

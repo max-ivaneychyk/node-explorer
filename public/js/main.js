@@ -28,6 +28,11 @@ window.addEventListener('load', function () {
     function updateExplorer() {
         let hash = location.hash.slice(1);
         ajax('url=' +  hash + '', function (list) {
+            if(list.error) {
+                history.back();
+                console.log(list.error);
+                return;
+            }
 
             let template = '';
             list.forEach(function (file) {
