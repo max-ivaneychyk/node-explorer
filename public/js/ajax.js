@@ -12,7 +12,7 @@ window.ajax = function ajax(url, data, callback) {
     }
     // кодируем символы + в дате
     str = str.replace(/\+/gim, '$plus');
-    debugger
+
     xhr.send(encodeURI(str)); // (1)
 
     xhr.onreadystatechange = function() { // (3)
