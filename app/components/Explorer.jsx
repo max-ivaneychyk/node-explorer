@@ -14,6 +14,7 @@ class Explorer extends React.Component {
         };
 
         this.refresh = this.refresh.bind(this);
+        this.filterList = this.filterList.bind(this);
     }
 
     refresh (path) {
@@ -31,10 +32,12 @@ class Explorer extends React.Component {
         this.refresh()
     }
     filterList(text){
-    //    var filteredList = this.props.data.items.filter(function(item){
-    //        return item.toLowerCase().search(text.toLowerCase())!== -1;
-    //    });
-    //    this.setState({items: filteredList});
+        debugger
+        var filteredList = this.props.data.files.filter(function(file){
+            return file.name.toLowerCase().search(text.toLowerCase())!== -1;
+        });
+        console.log(filteredList);
+        this.setState({files: filteredList});
     }
 
     render() {

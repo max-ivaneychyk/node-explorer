@@ -97,6 +97,7 @@
 	        };
 
 	        _this.refresh = _this.refresh.bind(_this);
+	        _this.filterList = _this.filterList.bind(_this);
 	        return _this;
 	    }
 
@@ -121,10 +122,12 @@
 	    }, {
 	        key: 'filterList',
 	        value: function filterList(text) {
-	            //    var filteredList = this.props.data.items.filter(function(item){
-	            //        return item.toLowerCase().search(text.toLowerCase())!== -1;
-	            //    });
-	            //    this.setState({items: filteredList});
+	            debugger;
+	            var filteredList = this.props.data.files.filter(function (file) {
+	                return file.name.toLowerCase().search(text.toLowerCase()) !== -1;
+	            });
+	            console.log(filteredList);
+	            this.setState({ files: filteredList });
 	        }
 	    }, {
 	        key: 'render',
@@ -4768,7 +4771,7 @@
 	    }, {
 	        key: "render",
 	        value: function render() {
-	            return React.createElement("input", { placeholder: "\u041F\u043E\u0438\u0441\u043A", onChange: this.onTextChanged });
+	            return React.createElement("input", { placeholder: "\u041F\u043E\u0438\u0441\u043A \u043F\u043E \u043F\u0430\u043F\u043A\u0435", onChange: this.onTextChanged });
 	        }
 	    }]);
 

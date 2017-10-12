@@ -13,7 +13,7 @@ class SearchPlugin extends React.Component{
     }
 
     render() {
-        return <input placeholder="Поиск" onChange={this.onTextChanged} />;
+        return <input placeholder="Поиск по папке" onChange={this.onTextChanged} />;
     }
 }
 
