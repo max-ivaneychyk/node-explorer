@@ -4,6 +4,8 @@ let fsExtra = require('fs-extra');
 let path = require('path');
 let fs = require('fs');
 
+const PORT = 3000;
+
 // подключение express
 let express = require("express");
 
@@ -177,6 +179,6 @@ app.get("/", function (request, response) {
 
 app.use(express.static(__dirname + "/public"));
 // начинаем прослушивать подключения на 3000 порту
-app.listen(3000);
+app.listen(PORT);
 
 

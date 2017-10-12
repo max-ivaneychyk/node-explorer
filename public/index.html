@@ -9,37 +9,10 @@
 </head>
 <body>
 
-<header>
-    <menu>
-        <li><p data-command="add-folder"> Новая папка </p></li>
-        <li><p> Вверх </p></li>
-        <li><p> Обновить</p></li>
-    </menu>
-</header>
 
-<!-- Mouse Context Menu -->
-<nav id="context-menu" class="context-menu">
-    <ul class="context-menu__items">
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="context-menu-item-open"><i class="fa fa-eye"></i> Open</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="context-menu-item-rename"><i class="fa fa-eye"></i> Rename</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="context-menu-item-copy"><i class="fa fa-edit"></i> Copy</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="context-menu-item-delete"><i class="fa fa-times"></i> Delete </a>
-        </li>
-    </ul>
-</nav>
+<div id="container"></div>
 
-<script src="./js/Event.js"></script>
-<script src="js/contextMenu.js"></script>
-<script src="./js/ajax.js"></script>
-<script src="js/ls.js"></script>
-<script src="js/head.js"></script>
+<script src="./bundle.js"></script>
 
 </body>
 </html>

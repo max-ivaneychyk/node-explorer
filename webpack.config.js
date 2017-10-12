@@ -8,6 +8,10 @@ module.exports = {
         extensions: ["", ".js", ".jsx"] // расширения для загрузки модулей
     },
     watch: true,
+    watchOptions: {
+        aggregateTimeout: 100,
+        poll: 1000
+    },
     module:{
         loaders:[   //загрузчики
             {
