@@ -1,5 +1,6 @@
-let React = require('react');
+import React from 'react';
 import PathField from './PathField';
+import SearchPlugin from './SearchPlugin';
 
 class Header extends React.Component {
     constructor(props){
@@ -15,10 +16,11 @@ class Header extends React.Component {
                     <li><p> Обновить</p></li>
                 </menu>
                 <PathField path={this.props.path}/>
+                <SearchPlugin filter={this.filterList} />
             </header>
         );
     }
 }
 
 
-module.exports = Header;
+export default Header;

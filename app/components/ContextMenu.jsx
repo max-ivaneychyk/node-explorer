@@ -1,4 +1,4 @@
-let React = require('react');
+import React from 'react';
 
 class ContextMenu extends React.Component {
     constructor(props){
@@ -27,4 +27,4 @@ class ContextMenu extends React.Component {
     }
 }
 
-module.exports = ContextMenu;
+export default ContextMenu;

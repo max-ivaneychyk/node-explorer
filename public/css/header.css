@@ -25,3 +25,41 @@ header {
     position: sticky;
 
 }
+
+.explorer-path,
+.search {
+    position: absolute;
+    right: 30%;
+    top: 29%;
+    display: inline-block;
+    width: 14%;
+    overflow: hidden;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    transition: width 0.5s ease-out 0.1s;
+    height: 46%;
+}
+
+.search {
+    left: 72%;
+}
+
+.explorer-path.active {
+    width: 70%;
+    border: 1px solid #419acc;
+}
+
+.search.active {
+    width: 28%;
+    border: 1px solid #419acc;
+}
+
+.search input,
+.explorer-path input {
+    width: 100%;
+    border: 0;
+}
+
+input:focus {
+    outline-color: transparent !important;
+}

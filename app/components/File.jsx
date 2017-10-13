@@ -1,4 +1,4 @@
-let React = require('react');
+import React from 'react';
 import Event from './Event';
 
 class File extends React.Component {
@@ -22,32 +22,29 @@ class File extends React.Component {
         return !!this.state.info.mounted;
     }
     componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
-        console.log(88888, nextProps);
-        console.log("componentWillReceiveProps()");
+     //   console.log("componentWillReceiveProps()");
     }
     componentWillMount(){
-        console.log("componentWillMount()");
+     //   console.log("componentWillMount()");
     }
     componentDidMount(){
-        console.log("componentDidMount()");
+     //   console.log("componentDidMount()");
     }
     componentWillUnmount(){
-        console.log("componentWillUnmount()");
+     //   console.log("componentWillUnmount()");
     }
     shouldComponentUpdate(){
-        console.log("shouldComponentUpdate()");
+     //   console.log("shouldComponentUpdate()");
         return true;
     }
     componentWillUpdate(nextProps, nextState){
-        console.log(nextProps, nextState);
-        console.log("componentWillUpdate()");
+     //   console.log("componentWillUpdate()");
     }
     componentDidUpdate(){
-        console.log("componentDidUpdate()");
+     //   console.log("componentDidUpdate()");
     }
     render() {
-        let info = this.state.info;
+        let info = this.props.info;
         let driveFlag = this.isDrive();
         let name = driveFlag ? info.mounted : info.name;
 
@@ -75,4 +72,4 @@ class File extends React.Component {
     }
 }
 
-module.exports = File;
+export default File;

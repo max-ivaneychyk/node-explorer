@@ -28,4 +28,4 @@ let ajax = function (url, data, callback) {
 
 };
 
-module.exports = ajax;
+export default ajax;

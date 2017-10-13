@@ -1,14 +1,12 @@
 import React from 'react';
 
-import SearchPlugin from './SearchPlugin';
 import ContextMenu from './ContextMenu';
 import Header from './Header';
 import File from './File';
 import Modal from './Modal';
 import Event from './Event';
+import ajax from './ajax';
 
-
-let ajax = require('./ajax');
 
 
 
@@ -34,17 +32,20 @@ class Explorer extends React.Component {
             }
 
             this.setState({files: list, currentPath: newPath});
+           // this.props.data.files = list;
         }.bind(this));
     }
     componentDidMount () {
        Event.on('explorer-update', this.refresh);
+       Event.on('explorer-search', this.filterList);
+
        Event.emit('explorer-update');
     }
     filterList(text){
-        var filteredList = this.props.data.files.filter(function(file){
+        let filteredList = this.props.data.files.filter(function(file){
             return file.name.toLowerCase().search(text.toLowerCase())!== -1;
         });
-        console.log(filteredList);
+
         this.setState({files: filteredList});
     }
     renderComponentsFiles () {
@@ -58,7 +59,6 @@ class Explorer extends React.Component {
                 <Header path={this.state.currentPath}/>
                 <Modal/>
                 <ContextMenu/>
-                <SearchPlugin filter={this.filterList} />
                 <div>
                     { this.renderComponentsFiles() }
                 </div>
@@ -67,4 +67,4 @@ class Explorer extends React.Component {
     }
 }
 
-module.exports = Explorer;
+export default Explorer;

@@ -1,4 +1,4 @@
-let React = require('react');
+import React from'react';
 
 let styleModalClose = {
   display: 'none'
@@ -37,7 +37,7 @@ class Modal extends React.Component {
         // todo emit event and refresh folder
     }
     onChange(e) {
-        var val = e.target.value;
+        let val = e.target.value;
         this.setState({nameFolder: val, warnMessage: ''});
     }
     render() {
@@ -45,7 +45,7 @@ class Modal extends React.Component {
             <div className="modal-wrap" style={this.state.opened ? styleModalOpen : styleModalClose}>
                 <div id="modal-custom" >
                     <header>
-                        <p> Веедите имя папки и нажмите кнопку Создать </p>
+                        <p> Веедите имя папки  </p>
                     </header>
                     <section>
                         <label> {this.state.warnMessage} </label>
@@ -60,4 +60,4 @@ class Modal extends React.Component {
 }
 
 
-module.exports = Modal;
+export default Modal;
