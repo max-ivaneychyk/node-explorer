@@ -1,3 +1,5 @@
+let NODE_ENV = 'development';
+
 module.exports = {
     entry: "./app/app.jsx", // входная точка - исходный файл
     output:{
@@ -7,6 +9,8 @@ module.exports = {
     resolve:{
         extensions: ["", ".js", ".jsx"] // расширения для загрузки модулей
     },
+    // source map
+    devtool: NODE_ENV === 'development' ? 'source-map' : false,
     watch: true,
     watchOptions: {
         aggregateTimeout: 100,
