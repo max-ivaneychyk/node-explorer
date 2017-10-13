@@ -1,4 +1,5 @@
 let React = require('react');
+import PathField from './PathField';
 
 class Header extends React.Component {
     constructor(props){
@@ -9,10 +10,11 @@ class Header extends React.Component {
         return(
             <header>
                 <menu>
-                    <li><p data-command="add-folder"> Новая папка </p></li>
+                    <li><p id='open-modal'> Новая папка </p></li>
                     <li><p> Вверх </p></li>
                     <li><p> Обновить</p></li>
                 </menu>
+                <PathField path={this.props.path}/>
             </header>
         );
     }

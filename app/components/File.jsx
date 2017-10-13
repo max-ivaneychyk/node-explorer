@@ -1,5 +1,5 @@
 let React = require('react');
-
+import Event from './Event';
 
 class File extends React.Component {
     constructor(props) {
@@ -12,7 +12,7 @@ class File extends React.Component {
       let elem = e.target;
       let path = elem.getAttribute('data-path');
 
-      this.state.refresh(path);
+      Event.emit('explorer-update', path);
     }
     onRename (e) {
     //    console.log('rename');

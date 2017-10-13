@@ -1,9 +1,16 @@
-let React = require('react');
-let SearchPlugin = require('./SearchPlugin');
-let ContextMenu = require('./ContextMenu');
-let Header = require('./Header');
-let File = require('./File');
+import React from 'react';
+
+import SearchPlugin from './SearchPlugin';
+import ContextMenu from './ContextMenu';
+import Header from './Header';
+import File from './File';
+import Modal from './Modal';
+import Event from './Event';
+
+
 let ajax = require('./ajax');
+
+
 
 class Explorer extends React.Component {
     constructor(props){
@@ -15,6 +22,7 @@ class Explorer extends React.Component {
 
         this.refresh = this.refresh.bind(this);
         this.filterList = this.filterList.bind(this);
+        this.renderComponentsFiles = this.renderComponentsFiles.bind(this);
     }
 
     refresh (path) {
@@ -29,31 +37,30 @@ class Explorer extends React.Component {
         }.bind(this));
     }
     componentDidMount () {
-        this.refresh()
+       Event.on('explorer-update', this.refresh);
+       Event.emit('explorer-update');
     }
     filterList(text){
-        debugger
         var filteredList = this.props.data.files.filter(function(file){
             return file.name.toLowerCase().search(text.toLowerCase())!== -1;
         });
         console.log(filteredList);
         this.setState({files: filteredList});
     }
-
+    renderComponentsFiles () {
+        return this.state.files.map(function(data, key){
+            return <File key={key} info={data} />
+        })
+    }
     render() {
-        let refresh = this.refresh;
-
         return(
             <div className="explorer">
-                <Header/>
+                <Header path={this.state.currentPath}/>
+                <Modal/>
                 <ContextMenu/>
                 <SearchPlugin filter={this.filterList} />
                 <div>
-                    {
-                        this.state.files.map(function(data, key){
-                            return <File key={key} info={data} refresh={refresh}/>
-                        })
-                    }
+                    { this.renderComponentsFiles() }
                 </div>
             </div>
         );
