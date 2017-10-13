@@ -1,0 +1,144 @@
+body {
+    margin: 0 10px;
+    height: 100%;
+}
+
+.center-page {
+    text-align: center;
+    position: relative;
+    display: block;
+    opacity: 0.5;
+    top: 50vh;
+}
+
+.file {
+    display: inline-block;
+    width: 100px;
+    height: 110px;
+    margin: 11px;
+    border: 1px solid rgba(202, 202, 202, 0.37);
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.file:hover {
+    background: rgba(55, 153, 202, 0.24);
+    border: 1px solid rgba(202, 202, 202, 0.01);
+}
+
+.event-layer.choose {
+    border: 1px solid rgba(55, 153, 202, 0.41);
+}
+
+
+.icon {
+    width: 70%;
+    height: 70%;
+    margin-left: 15%;
+    margin-top: 5%;
+    background: url("../img/default.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.title {
+    margin: 2% 9%;
+    font-size: 0.8em;
+    text-align: center;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+}
+
+.event-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* formats */
+.drive {
+    background: url("../img/drive.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.zip {
+    background: url("../img/zip.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.doc, .docx {
+    background: url("../img/doc.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.js {
+    background: url("../img/js.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.html, .htm {
+    background: url("../img/html.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.css {
+    background: url("../img/css.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.pdf {
+    background: url("../img/pdf.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.txt {
+    background: url("../img/txt.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.sys {
+    background: url("../img/sys.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.rar {
+    background: url("../img/rar.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.ini {
+    background: url("../img/ini.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.folder {
+    background: url("../img/folder.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+
+.png,
+.gif,
+.bmp,
+.jpg,
+.JPG {
+    background: url("../img/png-35.png") no-repeat;
+    background-size: 100% auto;
+    display: inline-block;
+}
+

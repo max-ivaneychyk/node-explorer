@@ -1,4 +1,5 @@
 import React from'react';
+import '../css/modal.css';
 
 let styleModalClose = {
   display: 'none'

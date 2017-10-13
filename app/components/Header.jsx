@@ -1,6 +1,7 @@
 import React from 'react';
 import PathField from './PathField';
 import SearchPlugin from './SearchPlugin';
+import '../css/header.css';
 
 class Header extends React.Component {
     constructor(props){

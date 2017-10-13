@@ -7,6 +7,8 @@ import Modal from './Modal';
 import Event from './Event';
 import ajax from './ajax';
 
+import '../css/main.css';
+import '../css/contextMenu.css';
 
 
 
