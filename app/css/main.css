@@ -1,6 +1,20 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+
 body {
     margin: 0 10px;
     height: 100%;
+    color: #595959;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
 }
 
 .center-page {

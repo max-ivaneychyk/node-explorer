@@ -1,6 +1,5 @@
 import React from 'react';
 
-import ContextMenu from './ContextMenu';
 import Header from './Header';
 import File from './File';
 import Modal from './Modal';
@@ -8,8 +7,6 @@ import Event from './Event';
 import ajax from './ajax';
 
 import '../css/main.css';
-import '../css/contextMenu.css';
-
 
 
 class Explorer extends React.Component {
@@ -62,7 +59,6 @@ class Explorer extends React.Component {
             <div className="explorer">
                 <Header path={this.state.currentPath}/>
                 <Modal/>
-                <ContextMenu/>
                 <div>
                     { this.renderComponentsFiles() }
                 </div>
