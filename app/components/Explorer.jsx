@@ -30,6 +30,7 @@ class Explorer extends React.Component {
 
         ajax('ls/', {'url': newPath})
             .then(list => {
+                this.props.data.files = list;
                 this.setState({files: list, currentPath: newPath});
             })
             .catch(error => {
@@ -44,7 +45,7 @@ class Explorer extends React.Component {
        Event.emit('explorer-update');
     }
     filterList(text){
-        let filteredList = this.props.data.files.filter(function(file){
+        let filteredList = this.props.data.filter(function(file){
             return file.name.toLowerCase().search(text.toLowerCase())!== -1;
         });
 
