@@ -32,6 +32,7 @@ class Explorer extends React.Component {
             .then(list => {
                 this.props.data.files = list;
                 this.setState({files: list, currentPath: newPath});
+                Event.emit('path-change', newPath);
             })
             .catch(error => {
                 console.log((error));

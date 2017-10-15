@@ -12,6 +12,10 @@ class PathField extends React.Component{
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onTextChanged = this.onTextChanged.bind(this);
+
+        Event.on('path-change', newPath => {
+            this.setState({path: newPath})
+        });
     }
 
     onTextChanged(e){
@@ -27,7 +31,7 @@ class PathField extends React.Component{
     render() {
         return (
             <div className={[this.state.focus ? "active" : "disable", "explorer-path" ].join(' ')}>
-                <input value={this.props.path}
+                <input value={this.state.path}
                        onChange={this.onTextChanged}
                        onBlur={this.onBlur}
                        onFocus={this.onFocus}/>
