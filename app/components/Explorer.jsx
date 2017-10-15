@@ -27,15 +27,15 @@ class Explorer extends React.Component {
 
     refresh (path) {
         let newPath = this.state.currentPath.concat(path || '');
-        ajax('ls/', {'url': newPath}, function (list) {
-            if(list.error) {
-                console.log(list.error);
-                return;
-            }
 
-            this.setState({files: list, currentPath: newPath});
-           // this.props.data.files = list;
-        }.bind(this));
+        ajax('ls/', {'url': newPath})
+            .then(list => {
+                this.setState({files: list, currentPath: newPath});
+            })
+            .catch(error => {
+                console.log((error));
+            });
+
     }
     componentDidMount () {
        Event.on('explorer-update', this.refresh);
