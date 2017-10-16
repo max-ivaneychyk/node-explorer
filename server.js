@@ -127,6 +127,9 @@ ee.on('delete', function (data) {
 app.post('/ls/', urlencodedParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
     let url = req.body.url;
+    if (!url) {
+        url = 'drivers';
+    }
     let eventName = url === 'drivers' ? 'get-disks' : 'get-files-from-dir';
 
     ee.emit(eventName, {
