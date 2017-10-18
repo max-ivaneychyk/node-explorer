@@ -6,6 +6,13 @@
     box-sizing: border-box;
 }
 
+.hide {
+    display: none;
+}
+.show {
+    display: inline-block;
+}
+
 
 body {
     margin: 0 10px;
@@ -41,7 +48,7 @@ body {
     border: 1px solid rgba(202, 202, 202, 0.01);
 }
 
-.event-layer.choose {
+.event-layer.selected-file {
     border: 1px solid rgba(55, 153, 202, 0.41);
 }
 

@@ -72,6 +72,8 @@
 	    value: true
 	});
 	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _react = __webpack_require__(2);
@@ -114,20 +116,23 @@
 	
 	        _this.state = {
 	            files: props.data.files,
+	            focusFile: null,
 	            currentPath: ''
 	        };
 	
-	        _this.refresh = _this.refresh.bind(_this);
+	        _this.onReload = _this.onReload.bind(_this);
+	        _this.onFocus = _this.onFocus.bind(_this);
 	        _this.filterList = _this.filterList.bind(_this);
 	        _this.updateFiles = _this.updateFiles.bind(_this);
 	        _this.changeCurrentPath = _this.changeCurrentPath.bind(_this);
+	        _this.deleteSelected = _this.deleteSelected.bind(_this);
 	        _this.renderComponentsFiles = _this.renderComponentsFiles.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Explorer, [{
-	        key: 'refresh',
-	        value: function refresh() {
+	        key: 'onReload',
+	        value: function onReload() {
 	            var _this2 = this;
 	
 	            var newPath = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.currentPath;
@@ -149,12 +154,49 @@
 	        key: 'changeCurrentPath',
 	        value: function changeCurrentPath(fullPath) {
 	            this.setState({ currentPath: fullPath });
-	            this.refresh(fullPath);
+	            this.onReload(fullPath);
+	            this.deleteSelected();
+	        }
+	    }, {
+	        key: 'onFocus',
+	        value: function onFocus(file) {
+	            this.setState({ focusFile: file });
+	        }
+	    }, {
+	        key: 'deleteSelected',
+	        value: function deleteSelected() {
+	            var selected = document.body.getElementsByClassName('selected-file');
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+	
+	            try {
+	                for (var _iterator = selected[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var el = _step.value;
+	
+	                    el.classList.remove('selected-file');
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+	
+	            this.setState({ focusFile: null });
 	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            this.refresh();
+	            this.onReload();
 	        }
 	    }, {
 	        key: 'filterList',
@@ -181,6 +223,7 @@
 	
 	                return _react2.default.createElement(_File2.default, { key: key,
 	                    data: data,
+	                    onFocus: _this3.onFocus,
 	                    currentPath: _this3.state.currentPath,
 	                    changeCurrentPath: _this3.changeCurrentPath });
 	            });
@@ -191,10 +234,10 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'explorer' },
-	                _react2.default.createElement(_Header2.default, { path: this.state.currentPath }),
+	                _react2.default.createElement(_Header2.default, _extends({}, this.state, { path: this.state.currentPath })),
 	                _react2.default.createElement(
 	                    'div',
-	                    null,
+	                    { className: 'wrap', onMouseDown: this.deleteSelected },
 	                    this.renderComponentsFiles()
 	                )
 	            );
@@ -2557,14 +2600,16 @@
 	
 	        var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
 	
-	        _this.state = { chooseFlag: false };
-	
+	        _this.onUp = _this.onUp.bind(_this);
+	        _this.onRename = _this.onRename.bind(_this);
+	        _this.onDelete = _this.onDelete.bind(_this);
+	        _this.onCreateFolder = _this.onCreateFolder.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Header, [{
-	        key: 'newFolder',
-	        value: function newFolder() {}
+	        key: 'onCreateFolder',
+	        value: function onCreateFolder() {}
 	    }, {
 	        key: 'onUp',
 	        value: function onUp() {}
@@ -2573,10 +2618,14 @@
 	        value: function onReload() {}
 	    }, {
 	        key: 'onRename',
-	        value: function onRename() {}
+	        value: function onRename() {
+	            this.props.focusFile.onRename();
+	        }
 	    }, {
 	        key: 'onDelete',
-	        value: function onDelete() {}
+	        value: function onDelete() {
+	            this.props.focusFile.onDelete();
+	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
@@ -2588,7 +2637,7 @@
 	                    null,
 	                    _react2.default.createElement(
 	                        'li',
-	                        { onClick: this.newFolder },
+	                        { onClick: this.onCreateFolder },
 	                        _react2.default.createElement(
 	                            'p',
 	                            { id: 'open-modal' },
@@ -2615,7 +2664,7 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'li',
-	                        { onClick: this.onRename },
+	                        { className: this.props.focusFile ? 'show' : 'hide', onClick: this.onRename },
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
@@ -2624,7 +2673,7 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'li',
-	                        { onClick: this.onDelete },
+	                        { className: this.props.focusFile ? 'show' : 'hide', onClick: this.onDelete },
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
@@ -3758,7 +3807,9 @@
 	
 	        _this.state = { renameFlag: false };
 	        _this.onOpen = _this.onOpen.bind(_this);
+	        _this.onSelect = _this.onSelect.bind(_this);
 	        _this.onRename = _this.onRename.bind(_this);
+	        _this.onDelete = _this.onDelete.bind(_this);
 	        return _this;
 	    }
 	
@@ -3770,14 +3821,20 @@
 	            this.props.changeCurrentPath(this.props.currentPath.concat(path));
 	        }
 	    }, {
-	        key: 'onRename',
-	        value: function onRename(e) {
-	            //   this.setState({renameFlag: true})
+	        key: 'onSelect',
+	        value: function onSelect(e) {
+	            e.target.classList.add('selected-file');
+	            this.props.onFocus(this);
 	        }
 	    }, {
-	        key: 'isDrive',
-	        value: function isDrive() {
-	            return !!this.props.info.mounted;
+	        key: 'onRename',
+	        value: function onRename() {
+	            console.log('rename');
+	        }
+	    }, {
+	        key: 'onDelete',
+	        value: function onDelete() {
+	            console.log('delete');
 	        }
 	    }, {
 	        key: 'editNameRender',
@@ -3813,7 +3870,7 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    { onDoubleClick: this.onOpen,
-	                        onClick: this.onRename,
+	                        onClick: this.onSelect,
 	                        className: 'event-layer', 'data-path': data.path },
 	                    ' '
 	                )
@@ -3901,7 +3958,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);", ""]);
 	
 	// module
-	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["E:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;;AAGD;IACI,eAAe;IACf,aAAa;IACb,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;;AAGD;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
+	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    display: none;\r\n}\r\n.show {\r\n    display: inline-block;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["E:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;AAED;IACI,cAAc;CACjB;AACD;IACI,sBAAsB;CACzB;;;AAGD;IACI,eAAe;IACf,aAAa;IACb,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;;AAGD;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    display: none;\r\n}\r\n.show {\r\n    display: inline-block;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
 	
 	// exports
 

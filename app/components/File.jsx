@@ -5,18 +5,24 @@ class File extends React.Component {
         super(props);
         this.state = {renameFlag: false};
         this.onOpen = this.onOpen.bind(this);
+        this.onSelect = this.onSelect.bind(this);
         this.onRename = this.onRename.bind(this);
+        this.onDelete = this.onDelete.bind(this);
     }
     onOpen (e) {
       let elem = e.target;
       let path = elem.getAttribute('data-path');
       this.props.changeCurrentPath( this.props.currentPath.concat(path) )
     }
-    onRename (e) {
-     //   this.setState({renameFlag: true})
+    onSelect (e) {
+        e.target.classList.add('selected-file');
+        this.props.onFocus(this)
     }
-    isDrive () {
-        return !!this.props.info.mounted;
+    onRename () {
+        console.log('rename');
+    }
+    onDelete () {
+        console.log('delete');
     }
     editNameRender (name) {
         let inputStyle = {zIndex: 100};
@@ -39,7 +45,7 @@ class File extends React.Component {
                     this.state.renameFlag ? this.editNameRender(data.name) : this.normalNameRender(data.name)
                 }
                 <div onDoubleClick={this.onOpen}
-                     onClick={this.onRename}
+                     onClick={this.onSelect}
                      className="event-layer" data-path={data.path}> </div>
             </div>
         );

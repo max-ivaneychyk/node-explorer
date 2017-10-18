@@ -35,7 +35,7 @@ class Modal extends React.Component {
 
         this.changeStateVisible();
         this.setState({nameFolder: '', warnMessage: ''});
-        // todo emit event and refresh folder
+        // todo emit event and onReload folder
     }
     onChange(e) {
         let val = e.target.value;
