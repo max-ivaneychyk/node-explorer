@@ -52,7 +52,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var ReactDOM = __webpack_require__(33);
+	var ReactDOM = __webpack_require__(30);
 	var React = __webpack_require__(2);
 	
 	
@@ -78,33 +78,23 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _ContextMenu = __webpack_require__(13);
-	
-	var _ContextMenu2 = _interopRequireDefault(_ContextMenu);
-	
-	var _Header = __webpack_require__(14);
+	var _Header = __webpack_require__(13);
 	
 	var _Header2 = _interopRequireDefault(_Header);
 	
-	var _File = __webpack_require__(24);
+	var _File = __webpack_require__(23);
 	
 	var _File2 = _interopRequireDefault(_File);
 	
-	var _Modal = __webpack_require__(25);
-	
-	var _Modal2 = _interopRequireDefault(_Modal);
-	
-	var _Event = __webpack_require__(16);
+	var _Event = __webpack_require__(15);
 	
 	var _Event2 = _interopRequireDefault(_Event);
 	
-	var _ajax = __webpack_require__(28);
+	var _ajax = __webpack_require__(27);
 	
 	var _ajax2 = _interopRequireDefault(_ajax);
 	
-	__webpack_require__(29);
-	
-	__webpack_require__(31);
+	__webpack_require__(28);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -124,41 +114,52 @@
 	
 	        _this.state = {
 	            files: props.data.files,
-	            currentPath: 'D://'
+	            currentPath: ''
 	        };
 	
 	        _this.refresh = _this.refresh.bind(_this);
 	        _this.filterList = _this.filterList.bind(_this);
+	        _this.updateFiles = _this.updateFiles.bind(_this);
+	        _this.changeCurrentPath = _this.changeCurrentPath.bind(_this);
 	        _this.renderComponentsFiles = _this.renderComponentsFiles.bind(_this);
 	        return _this;
 	    }
 	
 	    _createClass(Explorer, [{
 	        key: 'refresh',
-	        value: function refresh(path) {
-	            var newPath = this.state.currentPath.concat(path || '');
-	            (0, _ajax2.default)('ls/', { 'url': newPath }, function (list) {
-	                if (list.error) {
-	                    console.log(list.error);
-	                    return;
-	                }
+	        value: function refresh() {
+	            var _this2 = this;
 	
-	                this.setState({ files: list, currentPath: newPath });
-	                // this.props.data.files = list;
-	            }.bind(this));
+	            var newPath = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.currentPath;
+	
+	
+	            (0, _ajax2.default)('ls/', { 'url': newPath }).then(function (list) {
+	                return _this2.updateFiles(list);
+	            }).catch(function (error) {
+	                console.log(error);
+	            });
+	        }
+	    }, {
+	        key: 'updateFiles',
+	        value: function updateFiles(list) {
+	            this.props.data.files = list;
+	            this.setState({ files: list });
+	        }
+	    }, {
+	        key: 'changeCurrentPath',
+	        value: function changeCurrentPath(fullPath) {
+	            this.setState({ currentPath: fullPath });
+	            this.refresh(fullPath);
 	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            _Event2.default.on('explorer-update', this.refresh);
-	            _Event2.default.on('explorer-search', this.filterList);
-	
-	            _Event2.default.emit('explorer-update');
+	            this.refresh();
 	        }
 	    }, {
 	        key: 'filterList',
 	        value: function filterList(text) {
-	            var filteredList = this.props.data.files.filter(function (file) {
+	            var filteredList = this.props.files.filter(function (file) {
 	                return file.name.toLowerCase().search(text.toLowerCase()) !== -1;
 	            });
 	
@@ -167,8 +168,21 @@
 	    }, {
 	        key: 'renderComponentsFiles',
 	        value: function renderComponentsFiles() {
+	            var _this3 = this;
+	
+	            var pathFix = {
+	                'drive': '//',
+	                'directory': '/'
+	            };
+	
 	            return this.state.files.map(function (data, key) {
-	                return _react2.default.createElement(_File2.default, { key: key, info: data });
+	                data.name = data.mounted || data.name;
+	                data.path = data.name + (pathFix[data.format] || '');
+	
+	                return _react2.default.createElement(_File2.default, { key: key,
+	                    data: data,
+	                    currentPath: _this3.state.currentPath,
+	                    changeCurrentPath: _this3.changeCurrentPath });
 	            });
 	        }
 	    }, {
@@ -178,8 +192,6 @@
 	                'div',
 	                { className: 'explorer' },
 	                _react2.default.createElement(_Header2.default, { path: this.state.currentPath }),
-	                _react2.default.createElement(_Modal2.default, null),
-	                _react2.default.createElement(_ContextMenu2.default, null),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
@@ -2507,101 +2519,6 @@
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(2);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var ContextMenu = function (_React$Component) {
-	    _inherits(ContextMenu, _React$Component);
-	
-	    function ContextMenu(props) {
-	        _classCallCheck(this, ContextMenu);
-	
-	        var _this = _possibleConstructorReturn(this, (ContextMenu.__proto__ || Object.getPrototypeOf(ContextMenu)).call(this, props));
-	
-	        _this.state = {};
-	        return _this;
-	    }
-	
-	    _createClass(ContextMenu, [{
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement(
-	                "nav",
-	                { id: "context-menu", className: "context-menu" },
-	                _react2.default.createElement(
-	                    "ul",
-	                    { className: "context-menu__items" },
-	                    _react2.default.createElement(
-	                        "li",
-	                        { className: "context-menu__item" },
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#", className: "context-menu__link", "data-action": "context-menu-item-open" },
-	                            _react2.default.createElement("i", { className: "fa fa-eye" }),
-	                            " Open"
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "li",
-	                        { className: "context-menu__item" },
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#", className: "context-menu__link", "data-action": "context-menu-item-rename" },
-	                            _react2.default.createElement("i", { className: "fa fa-eye" }),
-	                            " Rename"
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "li",
-	                        { className: "context-menu__item" },
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#", className: "context-menu__link", "data-action": "context-menu-item-copy" },
-	                            _react2.default.createElement("i", { className: "fa fa-edit" }),
-	                            " Copy"
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        "li",
-	                        { className: "context-menu__item" },
-	                        _react2.default.createElement(
-	                            "a",
-	                            { href: "#", className: "context-menu__link", "data-action": "context-menu-item-delete" },
-	                            _react2.default.createElement("i", { className: "fa fa-times" }),
-	                            " Delete "
-	                        )
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return ContextMenu;
-	}(_react2.default.Component);
-	
-	exports.default = ContextMenu;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
@@ -2614,15 +2531,15 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _PathField = __webpack_require__(15);
+	var _PathField = __webpack_require__(14);
 	
 	var _PathField2 = _interopRequireDefault(_PathField);
 	
-	var _SearchPlugin = __webpack_require__(18);
+	var _SearchPlugin = __webpack_require__(17);
 	
 	var _SearchPlugin2 = _interopRequireDefault(_SearchPlugin);
 	
-	__webpack_require__(19);
+	__webpack_require__(18);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -2640,11 +2557,27 @@
 	
 	        var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
 	
-	        _this.state = {};
+	        _this.state = { chooseFlag: false };
+	
 	        return _this;
 	    }
 	
 	    _createClass(Header, [{
+	        key: 'newFolder',
+	        value: function newFolder() {}
+	    }, {
+	        key: 'onUp',
+	        value: function onUp() {}
+	    }, {
+	        key: 'onReload',
+	        value: function onReload() {}
+	    }, {
+	        key: 'onRename',
+	        value: function onRename() {}
+	    }, {
+	        key: 'onDelete',
+	        value: function onDelete() {}
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -2655,7 +2588,7 @@
 	                    null,
 	                    _react2.default.createElement(
 	                        'li',
-	                        null,
+	                        { onClick: this.newFolder },
 	                        _react2.default.createElement(
 	                            'p',
 	                            { id: 'open-modal' },
@@ -2664,7 +2597,7 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'li',
-	                        null,
+	                        { onClick: this.onUp },
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
@@ -2673,11 +2606,29 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        'li',
-	                        null,
+	                        { onClick: this.onReload },
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            ' \u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'li',
+	                        { onClick: this.onRename },
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            ' \u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C'
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'li',
+	                        { onClick: this.onDelete },
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            ' \u0423\u0434\u0430\u043B\u0438\u0442\u044C'
 	                        )
 	                    )
 	                ),
@@ -2693,7 +2644,7 @@
 	exports.default = Header;
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2708,7 +2659,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Event = __webpack_require__(16);
+	var _Event = __webpack_require__(15);
 	
 	var _Event2 = _interopRequireDefault(_Event);
 	
@@ -2735,6 +2686,10 @@
 	        _this.onFocus = _this.onFocus.bind(_this);
 	        _this.onBlur = _this.onBlur.bind(_this);
 	        _this.onTextChanged = _this.onTextChanged.bind(_this);
+	
+	        _Event2.default.on('path-change', function (newPath) {
+	            _this.setState({ path: newPath });
+	        });
 	        return _this;
 	    }
 	
@@ -2760,7 +2715,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: [this.state.focus ? "active" : "disable", "explorer-path"].join(' ') },
-	                _react2.default.createElement('input', { value: this.props.path,
+	                _react2.default.createElement('input', { value: this.state.path,
 	                    onChange: this.onTextChanged,
 	                    onBlur: this.onBlur,
 	                    onFocus: this.onFocus })
@@ -2774,7 +2729,7 @@
 	exports.default = PathField;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2783,7 +2738,7 @@
 	  value: true
 	});
 	
-	var _events = __webpack_require__(17);
+	var _events = __webpack_require__(16);
 	
 	var _events2 = _interopRequireDefault(_events);
 	
@@ -2792,7 +2747,7 @@
 	exports.default = new _events2.default();
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -3100,7 +3055,7 @@
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3115,7 +3070,7 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Event = __webpack_require__(16);
+	var _Event = __webpack_require__(15);
 	
 	var _Event2 = _interopRequireDefault(_Event);
 	
@@ -3189,13 +3144,13 @@
 	exports.default = SearchPlugin;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(20);
+	var content = __webpack_require__(19);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// Prepare cssTransformation
 	var transform;
@@ -3203,7 +3158,7 @@
 	var options = {}
 	options.transform = transform
 	// add the styles to the DOM
-	var update = __webpack_require__(22)(content, options);
+	var update = __webpack_require__(21)(content, options);
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -3220,21 +3175,21 @@
 	}
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(21)(true);
+	exports = module.exports = __webpack_require__(20)(true);
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}", "", {"version":3,"sources":["D:/node/node-explorer/app/css/header.css"],"names":[],"mappings":"AAAA;IACI,sBAAsB;IACtB,gBAAgB;IAChB,mBAAmB;;CAEtB;;AAED;IACI,UAAU;CACb;;AAED;IACI,iCAAiC;IACjC,kBAAkB;IAClB,mBAAmB;IACnB,sCAAsC;IACtC,WAAW;IACX,OAAO;IACP,YAAY;IACZ,eAAe;IACf,yBAAyB;IACzB,sBAAsB;IACtB,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;;CAEpB;;AAED;;IAEI,mBAAmB;IACnB,WAAW;IACX,SAAS;IACT,sBAAsB;IACtB,WAAW;IACX,iBAAiB;IACjB,0BAA0B;IAC1B,mBAAmB;IACnB,qCAAqC;IACrC,YAAY;CACf;;AAED;IACI,UAAU;CACb;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;;IAEI,YAAY;IACZ,UAAU;CACb;;AAED;IACI,sCAAsC;CACzC","file":"header.css","sourcesContent":["header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}"],"sourceRoot":""}]);
+	exports.push([module.id, "header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}", "", {"version":3,"sources":["E:/node/node-explorer/app/css/header.css"],"names":[],"mappings":"AAAA;IACI,sBAAsB;IACtB,gBAAgB;IAChB,mBAAmB;;CAEtB;;AAED;IACI,UAAU;CACb;;AAED;IACI,iCAAiC;IACjC,kBAAkB;IAClB,mBAAmB;IACnB,sCAAsC;IACtC,WAAW;IACX,OAAO;IACP,YAAY;IACZ,eAAe;IACf,yBAAyB;IACzB,sBAAsB;IACtB,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;;CAEpB;;AAED;;IAEI,mBAAmB;IACnB,WAAW;IACX,SAAS;IACT,sBAAsB;IACtB,WAAW;IACX,iBAAiB;IACjB,0BAA0B;IAC1B,mBAAmB;IACnB,qCAAqC;IACrC,YAAY;CACf;;AAED;IACI,UAAU;CACb;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;;IAEI,YAAY;IACZ,UAAU;CACb;;AAED;IACI,sCAAsC;CACzC","file":"header.css","sourcesContent":["header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}"],"sourceRoot":""}]);
 	
 	// exports
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 
 	/*
@@ -3316,7 +3271,7 @@
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -3362,7 +3317,7 @@
 	var	singletonCounter = 0;
 	var	stylesInsertedAtTop = [];
 	
-	var	fixUrls = __webpack_require__(23);
+	var	fixUrls = __webpack_require__(22);
 	
 	module.exports = function(list, options) {
 		if (false) {
@@ -3675,7 +3630,7 @@
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports) {
 
 	
@@ -3770,7 +3725,7 @@
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3784,10 +3739,6 @@
 	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
-	
-	var _Event = __webpack_require__(16);
-	
-	var _Event2 = _interopRequireDefault(_Event);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -3805,7 +3756,7 @@
 	
 	        var _this = _possibleConstructorReturn(this, (File.__proto__ || Object.getPrototypeOf(File)).call(this, props));
 	
-	        _this.state = { info: props.info, refresh: props.refresh };
+	        _this.state = { renameFlag: false };
 	        _this.onOpen = _this.onOpen.bind(_this);
 	        _this.onRename = _this.onRename.bind(_this);
 	        return _this;
@@ -3816,95 +3767,54 @@
 	        value: function onOpen(e) {
 	            var elem = e.target;
 	            var path = elem.getAttribute('data-path');
-	
-	            _Event2.default.emit('explorer-update', path);
+	            this.props.changeCurrentPath(this.props.currentPath.concat(path));
 	        }
 	    }, {
 	        key: 'onRename',
 	        value: function onRename(e) {
-	            //    console.log('rename');
-	            //    this.setState({info: {name: 'Some' , format: 'file'}})
+	            //   this.setState({renameFlag: true})
 	        }
 	    }, {
 	        key: 'isDrive',
 	        value: function isDrive() {
-	            return !!this.state.info.mounted;
+	            return !!this.props.info.mounted;
 	        }
 	    }, {
-	        key: 'componentWillReceiveProps',
-	        value: function componentWillReceiveProps(nextProps) {
-	            //   console.log("componentWillReceiveProps()");
+	        key: 'editNameRender',
+	        value: function editNameRender(name) {
+	            var inputStyle = { zIndex: 100 };
+	            return _react2.default.createElement('input', { className: 'title', value: name, type: 'text', style: inputStyle });
 	        }
 	    }, {
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            //   console.log("componentWillMount()");
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            //   console.log("componentDidMount()");
-	        }
-	    }, {
-	        key: 'componentWillUnmount',
-	        value: function componentWillUnmount() {
-	            //   console.log("componentWillUnmount()");
-	        }
-	    }, {
-	        key: 'shouldComponentUpdate',
-	        value: function shouldComponentUpdate() {
-	            //   console.log("shouldComponentUpdate()");
-	            return true;
-	        }
-	    }, {
-	        key: 'componentWillUpdate',
-	        value: function componentWillUpdate(nextProps, nextState) {
-	            //   console.log("componentWillUpdate()");
-	        }
-	    }, {
-	        key: 'componentDidUpdate',
-	        value: function componentDidUpdate() {
-	            //   console.log("componentDidUpdate()");
+	        key: 'normalNameRender',
+	        value: function normalNameRender(name) {
+	            return _react2.default.createElement(
+	                'h3',
+	                { className: 'title' },
+	                ' ',
+	                name,
+	                ' '
+	            );
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var info = this.props.info;
-	            var driveFlag = this.isDrive();
-	            var name = driveFlag ? info.mounted : info.name;
-	
-	            var format = void 0;
-	            var path = void 0;
-	
-	            if (info.format === 'directory') {
-	                path = name + '/';
-	                format = 'folder';
-	            } else if (info.format === 'file') {
-	                path = name;
-	                format = 'file-';
-	            } else if (driveFlag) {
-	                path = name + '//';
-	                format = 'drive';
-	            }
+	            var data = this.props.data;
 	
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'file' },
+	                { className: 'one-file' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: [format, 'icon'].join(' ') },
+	                    { className: [data.format, 'icon'].join(' ') },
 	                    ' '
 	                ),
-	                _react2.default.createElement(
-	                    'h3',
-	                    { className: 'title' },
-	                    ' ',
-	                    name,
-	                    ' '
-	                ),
+	                this.state.renameFlag ? this.editNameRender(data.name) : this.normalNameRender(data.name),
 	                _react2.default.createElement(
 	                    'div',
-	                    { onDoubleClick: this.onOpen, onClick: this.onRename, className: 'event-layer', 'data-path': path },
+	                    { onDoubleClick: this.onOpen,
+	                        onClick: this.onRename,
+	                        className: 'event-layer', 'data-path': data.path },
 	                    ' '
 	                )
 	            );
@@ -3917,183 +3827,10 @@
 	exports.default = File;
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(2);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	__webpack_require__(26);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var styleModalClose = {
-	    display: 'none'
-	};
-	
-	var styleModalOpen = {
-	    display: 'block'
-	};
-	
-	var Modal = function (_React$Component) {
-	    _inherits(Modal, _React$Component);
-	
-	    function Modal(props) {
-	        _classCallCheck(this, Modal);
-	
-	        var _this = _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).call(this, props));
-	
-	        _this.state = { opened: false, nameFolder: '', warnMessage: '' };
-	
-	        _this.changeStateVisible = _this.changeStateVisible.bind(_this);
-	        _this.addFolder = _this.addFolder.bind(_this);
-	        _this.onChange = _this.onChange.bind(_this);
-	        return _this;
-	    }
-	
-	    _createClass(Modal, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var btnOpenModal = document.getElementById('open-modal');
-	            btnOpenModal.addEventListener('click', this.changeStateVisible);
-	        }
-	    }, {
-	        key: 'changeStateVisible',
-	        value: function changeStateVisible() {
-	            this.setState({ opened: !this.state.opened });
-	        }
-	    }, {
-	        key: 'addFolder',
-	        value: function addFolder(e) {
-	            var nameFolder = this.state.nameFolder.trim();
-	            var hasBadSymbols = /[\/:*?"<>|]/.test(nameFolder);
-	            if (hasBadSymbols || !nameFolder.length) {
-	                this.setState({ warnMessage: 'Имя папки не должно быть пустым или содержать символы \\/ : * ? " < > | ' });
-	                return;
-	            }
-	
-	            this.changeStateVisible();
-	            this.setState({ nameFolder: '', warnMessage: '' });
-	            // todo emit event and refresh folder
-	        }
-	    }, {
-	        key: 'onChange',
-	        value: function onChange(e) {
-	            var val = e.target.value;
-	            this.setState({ nameFolder: val, warnMessage: '' });
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'modal-wrap', style: this.state.opened ? styleModalOpen : styleModalClose },
-	                _react2.default.createElement(
-	                    'div',
-	                    { id: 'modal-custom' },
-	                    _react2.default.createElement(
-	                        'header',
-	                        null,
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            ' \u0412\u0435\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F \u043F\u0430\u043F\u043A\u0438  '
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'section',
-	                        null,
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            ' ',
-	                            this.state.warnMessage,
-	                            ' '
-	                        ),
-	                        _react2.default.createElement('input', { type: 'text', placeholder: 'Name folder', value: this.state.nameFolder, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'button',
-	                            { onClick: this.changeStateVisible },
-	                            '\u041E\u0442\u043C\u0435\u043D\u0438\u0442\u044C'
-	                        ),
-	                        _react2.default.createElement(
-	                            'button',
-	                            { onClick: this.addFolder },
-	                            '\u0421\u043E\u0437\u0434\u0430\u0442\u044C'
-	                        )
-	                    )
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return Modal;
-	}(_react2.default.Component);
-	
-	exports.default = Modal;
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(27);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// Prepare cssTransformation
-	var transform;
-	
-	var options = {}
-	options.transform = transform
-	// add the styles to the DOM
-	var update = __webpack_require__(22)(content, options);
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js?url=false&sourceMap=true!./modal.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js?url=false&sourceMap=true!./modal.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
+/* 24 */,
+/* 25 */,
+/* 26 */,
 /* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(21)(true);
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\r\n.modal-wrap {\r\n    display: block;\r\n    position: fixed;\r\n    z-index: 9999;\r\n    width: 100%;\r\n    height:100%;\r\n    top:0;\r\n    left:0;\r\n    background: rgba(0, 0, 0, 0.44);\r\n}\r\n#modal-custom {\r\n    display: block;\r\n    top: 50%;\r\n    margin: 0 auto;\r\n    width: 350px;\r\n    height: 151px;\r\n    position: relative;\r\n    background: white;\r\n    border: 1px solid rgba(58, 58, 58, 0.29);\r\n    border-radius: 6px;\r\n}", "", {"version":3,"sources":["D:/node/node-explorer/app/css/modal.css"],"names":[],"mappings":";AACA;IACI,eAAe;IACf,gBAAgB;IAChB,cAAc;IACd,YAAY;IACZ,YAAY;IACZ,MAAM;IACN,OAAO;IACP,gCAAgC;CACnC;AACD;IACI,eAAe;IACf,SAAS;IACT,eAAe;IACf,aAAa;IACb,cAAc;IACd,mBAAmB;IACnB,kBAAkB;IAClB,yCAAyC;IACzC,mBAAmB;CACtB","file":"modal.css","sourcesContent":["\r\n.modal-wrap {\r\n    display: block;\r\n    position: fixed;\r\n    z-index: 9999;\r\n    width: 100%;\r\n    height:100%;\r\n    top:0;\r\n    left:0;\r\n    background: rgba(0, 0, 0, 0.44);\r\n}\r\n#modal-custom {\r\n    display: block;\r\n    top: 50%;\r\n    margin: 0 auto;\r\n    width: 350px;\r\n    height: 151px;\r\n    position: relative;\r\n    background: white;\r\n    border: 1px solid rgba(58, 58, 58, 0.29);\r\n    border-radius: 6px;\r\n}"],"sourceRoot":""}]);
-	
-	// exports
-
-
-/***/ }),
-/* 28 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -4101,45 +3838,37 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var ajax = function ajax(url, data, callback) {
-	    var xhr = new XMLHttpRequest();
-	    var str = '';
+	var ajax = function ajax(url, data) {
+	    var body = '';
 	
-	    xhr.open('POST', url, true);
-	    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	    for (var key in data) {
 	        if (data.hasOwnProperty(key)) {
 	            var val = data[key].push ? JSON.stringify(data[key]) : data[key];
-	            str += key + '=' + val + '&';
+	            body += key + '=' + val + '&';
 	        }
 	    }
-	    // кодируем символы + в дате
-	    str = str.replace(/\+/gim, '$plus');
 	
-	    xhr.send(encodeURI(str)); // (1)
-	
-	    xhr.onreadystatechange = function () {
-	        // (3)
-	        if (xhr.readyState !== 4) return;
-	
-	        if (xhr.status !== 200) {
-	            callback(JSON.parse(xhr.status + ': ' + xhr.statusText));
-	        } else {
-	            callback(JSON.parse(xhr.responseText));
-	        }
-	    };
+	    return fetch(url, {
+	        method: 'POST',
+	        headers: {
+	            "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+	        },
+	        body: body
+	    }).then(function (answer) {
+	        return answer.json();
+	    });
 	};
 	
 	exports.default = ajax;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(30);
+	var content = __webpack_require__(29);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// Prepare cssTransformation
 	var transform;
@@ -4147,7 +3876,7 @@
 	var options = {}
 	options.transform = transform
 	// add the styles to the DOM
-	var update = __webpack_require__(22)(content, options);
+	var update = __webpack_require__(21)(content, options);
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -4164,66 +3893,21 @@
 	}
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(21)(true);
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "body {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.folder {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["D:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAAA;IACI,eAAe;IACf,aAAa;CAChB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["body {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.folder {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
-	
-	// exports
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(32);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// Prepare cssTransformation
-	var transform;
-	
-	var options = {}
-	options.transform = transform
-	// add the styles to the DOM
-	var update = __webpack_require__(22)(content, options);
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../node_modules/css-loader/index.js?url=false&sourceMap=true!./contextMenu.css", function() {
-				var newContent = require("!!../../node_modules/css-loader/index.js?url=false&sourceMap=true!./contextMenu.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(21)(true);
+	exports = module.exports = __webpack_require__(20)(true);
 	// imports
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);", ""]);
 	
 	// module
-	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\nbody {\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.container {\r\n    margin: 0 auto;\r\n    padding: 0 24px;\r\n    max-width: 960px;\r\n}\r\n\r\n/* primary header */\r\n\r\n.primary-header {\r\n    padding: 24px 0;\r\n    text-align: center;\r\n    border-bottom: solid 2px #cfcfcf;\r\n}\r\n\r\n.primary-header__title {\r\n    color: #393939;\r\n    font-size: 36px;\r\n}\r\n\r\n.primary-header__title small {\r\n    font-size: 18px;\r\n    color: #898989;\r\n}\r\n\r\n/* content */\r\n\r\n.content {\r\n    padding: 48px 0;\r\n    border-bottom: solid 2px #cfcfcf;\r\n}\r\n\r\n.content__footer {\r\n    margin-top: 12px;\r\n    text-align: center;\r\n}\r\n\r\n/* footer */\r\n\r\n.primary-footer {\r\n    padding: 24px 0;\r\n    color: #898989;\r\n    font-size: 14px;\r\n    text-align: center;\r\n}\r\n\r\n/* tasks */\r\n\r\n.tasks {\r\n    list-style: none;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.task {\r\n    display: flex;\r\n    justify-content: space-between;\r\n    padding: 12px 0;\r\n    border-bottom: solid 1px #dfdfdf;\r\n}\r\n\r\n.task:last-child {\r\n    border-bottom: none;\r\n}\r\n\r\n/* context menu */\r\n\r\n.context-menu {\r\n    display: none;\r\n    position: absolute;\r\n    z-index: 10;\r\n    padding: 12px 0;\r\n    width: 240px;\r\n    background-color: #fff;\r\n    border: solid 1px #dfdfdf;\r\n    box-shadow: 1px 1px 2px #cfcfcf;\r\n}\r\n\r\n.context-menu--active {\r\n    display: block;\r\n}\r\n\r\n.context-menu__items {\r\n    list-style: none;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.context-menu__item {\r\n    display: block;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.context-menu__item:last-child {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.context-menu__link {\r\n    display: block;\r\n    padding: 4px 12px;\r\n    color: #0066aa;\r\n    text-decoration: none;\r\n}\r\n\r\n.context-menu__link:hover {\r\n    color: #fff;\r\n    background-color: #0066aa;\r\n}", "", {"version":3,"sources":["D:/node/node-explorer/app/css/contextMenu.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;AAED;IACI,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,eAAe;IACf,gBAAgB;IAChB,iBAAiB;CACpB;;AAED,oBAAoB;;AAEpB;IACI,gBAAgB;IAChB,mBAAmB;IACnB,iCAAiC;CACpC;;AAED;IACI,eAAe;IACf,gBAAgB;CACnB;;AAED;IACI,gBAAgB;IAChB,eAAe;CAClB;;AAED,aAAa;;AAEb;IACI,gBAAgB;IAChB,iCAAiC;CACpC;;AAED;IACI,iBAAiB;IACjB,mBAAmB;CACtB;;AAED,YAAY;;AAEZ;IACI,gBAAgB;IAChB,eAAe;IACf,gBAAgB;IAChB,mBAAmB;CACtB;;AAED,WAAW;;AAEX;IACI,iBAAiB;IACjB,UAAU;IACV,WAAW;CACd;;AAED;IACI,cAAc;IACd,+BAA+B;IAC/B,gBAAgB;IAChB,iCAAiC;CACpC;;AAED;IACI,oBAAoB;CACvB;;AAED,kBAAkB;;AAElB;IACI,cAAc;IACd,mBAAmB;IACnB,YAAY;IACZ,gBAAgB;IAChB,aAAa;IACb,uBAAuB;IACvB,0BAA0B;IAC1B,gCAAgC;CACnC;;AAED;IACI,eAAe;CAClB;;AAED;IACI,iBAAiB;IACjB,UAAU;IACV,WAAW;CACd;;AAED;IACI,eAAe;IACf,mBAAmB;CACtB;;AAED;IACI,iBAAiB;CACpB;;AAED;IACI,eAAe;IACf,kBAAkB;IAClB,eAAe;IACf,sBAAsB;CACzB;;AAED;IACI,YAAY;IACZ,0BAA0B;CAC7B","file":"contextMenu.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\nbody {\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.container {\r\n    margin: 0 auto;\r\n    padding: 0 24px;\r\n    max-width: 960px;\r\n}\r\n\r\n/* primary header */\r\n\r\n.primary-header {\r\n    padding: 24px 0;\r\n    text-align: center;\r\n    border-bottom: solid 2px #cfcfcf;\r\n}\r\n\r\n.primary-header__title {\r\n    color: #393939;\r\n    font-size: 36px;\r\n}\r\n\r\n.primary-header__title small {\r\n    font-size: 18px;\r\n    color: #898989;\r\n}\r\n\r\n/* content */\r\n\r\n.content {\r\n    padding: 48px 0;\r\n    border-bottom: solid 2px #cfcfcf;\r\n}\r\n\r\n.content__footer {\r\n    margin-top: 12px;\r\n    text-align: center;\r\n}\r\n\r\n/* footer */\r\n\r\n.primary-footer {\r\n    padding: 24px 0;\r\n    color: #898989;\r\n    font-size: 14px;\r\n    text-align: center;\r\n}\r\n\r\n/* tasks */\r\n\r\n.tasks {\r\n    list-style: none;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.task {\r\n    display: flex;\r\n    justify-content: space-between;\r\n    padding: 12px 0;\r\n    border-bottom: solid 1px #dfdfdf;\r\n}\r\n\r\n.task:last-child {\r\n    border-bottom: none;\r\n}\r\n\r\n/* context menu */\r\n\r\n.context-menu {\r\n    display: none;\r\n    position: absolute;\r\n    z-index: 10;\r\n    padding: 12px 0;\r\n    width: 240px;\r\n    background-color: #fff;\r\n    border: solid 1px #dfdfdf;\r\n    box-shadow: 1px 1px 2px #cfcfcf;\r\n}\r\n\r\n.context-menu--active {\r\n    display: block;\r\n}\r\n\r\n.context-menu__items {\r\n    list-style: none;\r\n    margin: 0;\r\n    padding: 0;\r\n}\r\n\r\n.context-menu__item {\r\n    display: block;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.context-menu__item:last-child {\r\n    margin-bottom: 0;\r\n}\r\n\r\n.context-menu__link {\r\n    display: block;\r\n    padding: 4px 12px;\r\n    color: #0066aa;\r\n    text-decoration: none;\r\n}\r\n\r\n.context-menu__link:hover {\r\n    color: #fff;\r\n    background-color: #0066aa;\r\n}"],"sourceRoot":""}]);
+	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["E:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;;AAGD;IACI,eAAe;IACf,aAAa;IACb,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;;AAGD;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.choose {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
 	
 	// exports
 
 
 /***/ }),
-/* 33 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -4260,15 +3944,15 @@
 	  // DCE check should happen before ReactDOM bundle executes so that
 	  // DevTools can report bad minification during injection.
 	  checkDCE();
-	  module.exports = __webpack_require__(34);
+	  module.exports = __webpack_require__(31);
 	} else {
-	  module.exports = __webpack_require__(43);
+	  module.exports = __webpack_require__(40);
 	}
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 34 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -4281,7 +3965,7 @@
 	 LICENSE file in the root directory of this source tree.
 	 Modernizr 3.0.0pre (Custom Build) | MIT
 	*/
-	'use strict';var aa=__webpack_require__(2);__webpack_require__(7);var l=__webpack_require__(35),n=__webpack_require__(5),ba=__webpack_require__(36),ca=__webpack_require__(8),da=__webpack_require__(6),ea=__webpack_require__(37),fa=__webpack_require__(38),ha=__webpack_require__(41),ia=__webpack_require__(42);
+	'use strict';var aa=__webpack_require__(2);__webpack_require__(7);var l=__webpack_require__(32),n=__webpack_require__(5),ba=__webpack_require__(33),ca=__webpack_require__(8),da=__webpack_require__(6),ea=__webpack_require__(34),fa=__webpack_require__(35),ha=__webpack_require__(38),ia=__webpack_require__(39);
 	function w(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:w("227");
 	function ja(a){switch(a){case "svg":return"http://www.w3.org/2000/svg";case "math":return"http://www.w3.org/1998/Math/MathML";default:return"http://www.w3.org/1999/xhtml"}}
 	var ka={Namespaces:{html:"http://www.w3.org/1999/xhtml",mathml:"http://www.w3.org/1998/Math/MathML",svg:"http://www.w3.org/2000/svg"},getIntrinsicNamespace:ja,getChildNamespace:function(a,b){return null==a||"http://www.w3.org/1999/xhtml"===a?ja(b):"http://www.w3.org/2000/svg"===a&&"foreignObject"===b?"http://www.w3.org/1999/xhtml":a}},la=null,oa={};
@@ -4530,7 +4214,7 @@
 
 
 /***/ }),
-/* 35 */
+/* 32 */
 /***/ (function(module, exports) {
 
 	/**
@@ -4568,7 +4252,7 @@
 	module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 36 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -4648,7 +4332,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 37 */
+/* 34 */
 /***/ (function(module, exports) {
 
 	/**
@@ -4718,7 +4402,7 @@
 	module.exports = shallowEqual;
 
 /***/ }),
-/* 38 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4732,7 +4416,7 @@
 	 * 
 	 */
 	
-	var isTextNode = __webpack_require__(39);
+	var isTextNode = __webpack_require__(36);
 	
 	/*eslint-disable no-bitwise */
 	
@@ -4760,7 +4444,7 @@
 	module.exports = containsNode;
 
 /***/ }),
-/* 39 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4774,7 +4458,7 @@
 	 * @typechecks
 	 */
 	
-	var isNode = __webpack_require__(40);
+	var isNode = __webpack_require__(37);
 	
 	/**
 	 * @param {*} object The object to check.
@@ -4787,7 +4471,7 @@
 	module.exports = isTextNode;
 
 /***/ }),
-/* 40 */
+/* 37 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -4814,7 +4498,7 @@
 	module.exports = isNode;
 
 /***/ }),
-/* 41 */
+/* 38 */
 /***/ (function(module, exports) {
 
 	/**
@@ -4843,7 +4527,7 @@
 	module.exports = focusNode;
 
 /***/ }),
-/* 42 */
+/* 39 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -4884,7 +4568,7 @@
 	module.exports = getActiveElement;
 
 /***/ }),
-/* 43 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @license React v16.0.0
@@ -4905,21 +4589,21 @@
 	
 	var react = __webpack_require__(2);
 	var invariant = __webpack_require__(7);
-	var ExecutionEnvironment = __webpack_require__(35);
+	var ExecutionEnvironment = __webpack_require__(32);
 	var _assign = __webpack_require__(5);
-	var EventListener = __webpack_require__(36);
+	var EventListener = __webpack_require__(33);
 	var require$$0 = __webpack_require__(10);
-	var hyphenateStyleName = __webpack_require__(44);
+	var hyphenateStyleName = __webpack_require__(41);
 	var emptyFunction = __webpack_require__(8);
-	var camelizeStyleName = __webpack_require__(46);
-	var performanceNow = __webpack_require__(48);
-	var propTypes = __webpack_require__(50);
+	var camelizeStyleName = __webpack_require__(43);
+	var performanceNow = __webpack_require__(45);
+	var propTypes = __webpack_require__(47);
 	var emptyObject = __webpack_require__(6);
 	var checkPropTypes = __webpack_require__(11);
-	var shallowEqual = __webpack_require__(37);
-	var containsNode = __webpack_require__(38);
-	var focusNode = __webpack_require__(41);
-	var getActiveElement = __webpack_require__(42);
+	var shallowEqual = __webpack_require__(34);
+	var containsNode = __webpack_require__(35);
+	var focusNode = __webpack_require__(38);
+	var getActiveElement = __webpack_require__(39);
 	
 	/**
 	 * Copyright (c) 2013-present, Facebook, Inc.
@@ -22112,7 +21796,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 44 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -22126,7 +21810,7 @@
 	
 	'use strict';
 	
-	var hyphenate = __webpack_require__(45);
+	var hyphenate = __webpack_require__(42);
 	
 	var msPattern = /^ms-/;
 	
@@ -22153,7 +21837,7 @@
 	module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 45 */
+/* 42 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -22188,7 +21872,7 @@
 	module.exports = hyphenate;
 
 /***/ }),
-/* 46 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -22202,7 +21886,7 @@
 	
 	'use strict';
 	
-	var camelize = __webpack_require__(47);
+	var camelize = __webpack_require__(44);
 	
 	var msPattern = /^-ms-/;
 	
@@ -22230,7 +21914,7 @@
 	module.exports = camelizeStyleName;
 
 /***/ }),
-/* 47 */
+/* 44 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -22264,7 +21948,7 @@
 	module.exports = camelize;
 
 /***/ }),
-/* 48 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22278,7 +21962,7 @@
 	 * @typechecks
 	 */
 	
-	var performance = __webpack_require__(49);
+	var performance = __webpack_require__(46);
 	
 	var performanceNow;
 	
@@ -22300,7 +21984,7 @@
 	module.exports = performanceNow;
 
 /***/ }),
-/* 49 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -22314,7 +21998,7 @@
 	
 	'use strict';
 	
-	var ExecutionEnvironment = __webpack_require__(35);
+	var ExecutionEnvironment = __webpack_require__(32);
 	
 	var performance;
 	
@@ -22325,7 +22009,7 @@
 	module.exports = performance || {};
 
 /***/ }),
-/* 50 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -22350,17 +22034,17 @@
 	  // By explicitly using `prop-types` you are opting into new development behavior.
 	  // http://fb.me/prop-types-in-prod
 	  var throwOnDirectAccess = true;
-	  module.exports = __webpack_require__(51)(isValidElement, throwOnDirectAccess);
+	  module.exports = __webpack_require__(48)(isValidElement, throwOnDirectAccess);
 	} else {
 	  // By explicitly using `prop-types` you are opting into new production behavior.
 	  // http://fb.me/prop-types-in-prod
-	  module.exports = __webpack_require__(52)();
+	  module.exports = __webpack_require__(49)();
 	}
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 51 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -22909,7 +22593,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 52 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**

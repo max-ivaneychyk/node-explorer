@@ -134,6 +134,11 @@ app.post('/ls/', urlencodedParser, function (req, res) {
 
     ee.emit(eventName, {
         path: url, callback: function (list) {
+
+            if (url === 'drivers') {
+                list.forEach(data => data.format='drive');
+            }
+
             list = JSON.stringify(list);
             res.setHeader('Content-Type', 'application/json');
             res.end(list);

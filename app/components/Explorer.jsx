@@ -2,7 +2,6 @@ import React from 'react';
 
 import Header from './Header';
 import File from './File';
-import Modal from './Modal';
 import Event from './Event';
 import ajax from './ajax';
 
@@ -14,51 +13,60 @@ class Explorer extends React.Component {
         super(props);
         this.state = {
             files: props.data.files,
-            currentPath: 'D://'
+            currentPath: ''
         };
 
         this.refresh = this.refresh.bind(this);
         this.filterList = this.filterList.bind(this);
+        this.updateFiles = this.updateFiles.bind(this);
+        this.changeCurrentPath = this.changeCurrentPath.bind(this);
         this.renderComponentsFiles = this.renderComponentsFiles.bind(this);
     }
 
-    refresh (path) {
-        let newPath = this.state.currentPath.concat(path || '');
+    refresh ( newPath = this.state.currentPath) {
 
         ajax('ls/', {'url': newPath})
-            .then(list => {
-                this.props.data.files = list;
-                this.setState({files: list, currentPath: newPath});
-                Event.emit('path-change', newPath);
-            })
-            .catch(error => {
-                console.log((error));
-            });
-
+            .then(list => this.updateFiles(list))
+            .catch(error => { console.log(error); });
+    }
+    updateFiles (list) {
+        this.props.data.files = list;
+        this.setState({files: list});
+    }
+    changeCurrentPath (fullPath) {
+        this.setState({currentPath: fullPath});
+        this.refresh(fullPath);
     }
     componentDidMount () {
-       Event.on('explorer-update', this.refresh);
-       Event.on('explorer-search', this.filterList);
-
-       Event.emit('explorer-update');
+       this.refresh();
     }
     filterList(text){
-        let filteredList = this.props.data.filter(function(file){
+        let filteredList = this.props.files.filter(function(file){
             return file.name.toLowerCase().search(text.toLowerCase())!== -1;
         });
 
         this.setState({files: filteredList});
     }
     renderComponentsFiles () {
-        return this.state.files.map(function(data, key){
-            return <File key={key} info={data} />
+        let pathFix = {
+            'drive': '//',
+            'directory': '/'
+        };
+
+        return this.state.files.map( (data, key) => {
+            data.name = data.mounted || data.name
+            data.path = data.name + (pathFix[data.format] || '');
+
+            return <File key={key}
+                         data={data}
+                         currentPath={this.state.currentPath}
+                         changeCurrentPath={this.changeCurrentPath}/>
         })
     }
     render() {
         return(
             <div className="explorer">
                 <Header path={this.state.currentPath}/>
-                <Modal/>
                 <div>
                     { this.renderComponentsFiles() }
                 </div>
