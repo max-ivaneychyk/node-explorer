@@ -1,5 +1,4 @@
 import React from 'react';
-import Event from './Event';
 
 class PathField extends React.Component{
 
@@ -31,7 +30,7 @@ class PathField extends React.Component{
     render() {
         return (
             <div className={[this.state.focus ? "active" : "disable", "explorer-path" ].join(' ')}>
-                <input value={this.state.path}
+                <input value={this.props.path}
                        onChange={this.onTextChanged}
                        onBlur={this.onBlur}
                        onFocus={this.onFocus}/>

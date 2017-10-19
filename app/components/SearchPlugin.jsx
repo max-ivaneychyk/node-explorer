@@ -1,5 +1,4 @@
 import React from 'react';
-import Event from './Event';
 
 class SearchPlugin extends React.Component{
 
@@ -14,18 +13,16 @@ class SearchPlugin extends React.Component{
         this.onBlur = this.onBlur.bind(this);
         this.onTextChanged = this.onTextChanged.bind(this);
 
-        Event.on('explorer-update', function () {
-            this.setState({text: ''});
-        }.bind(this));
+        props.filter('');
     }
     onTextChanged(e){
         let text = e.target.value.trim();   // удаляем пробелы
         this.setState({text: text});
-        Event.emit('explorer-search', text)
+        this.props.filter(text);
     }
     onBlur () {
-        this.setState({focus: false});
-        //  Event.emit('explorer-update', )
+        this.setState({focus: false, text: ''});
+        this.props.filter('');
     }
     onFocus () {
         this.setState({focus: true});

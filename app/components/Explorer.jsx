@@ -2,7 +2,6 @@ import React from 'react';
 
 import Header from './Header';
 import File from './File';
-import Event from './Event';
 import ajax from './ajax';
 
 import '../css/main.css';
@@ -117,7 +116,7 @@ class Explorer extends React.Component {
     }
 
     filterList(text) {
-        let filteredList = this.props.files.filter(function (file) {
+        let filteredList = this.props.data.files.filter(function (file) {
             return file.name.toLowerCase().search(text.toLowerCase()) !== -1;
         });
 
@@ -150,6 +149,7 @@ class Explorer extends React.Component {
                 <Header {...this.state}
                         onExitUp={this.onExitUp}
                         onReload={this.onReload}
+                        filterList={this.filterList}
                         onCreateFolder={this.onCreateFolder}
                         path={this.state.currentPath}/>
 
