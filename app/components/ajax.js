@@ -18,5 +18,5 @@ let ajax = function (url, data) {
         return answer.json();
     });
 };
-
+// TODO -rest PUT GET POST DELETE
 export default ajax;
