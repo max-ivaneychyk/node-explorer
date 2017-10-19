@@ -3,7 +3,7 @@
 
 ## Instalation
 Clone git repository:
-`dit clone https://github.com/max-ivaneychyk/node-explorer.git`
+`git clone https://github.com/max-ivaneychyk/node-explorer.git`
 
 Open directory:
 `cd node-explorer`
@@ -11,7 +11,7 @@ Open directory:
 Install dependencies:
  `npm install`
  
- ##Usage
+ ## Usage
  Execute command on console :
  `npm run dev`
  
