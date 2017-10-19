@@ -82,7 +82,10 @@ class Explorer extends React.Component {
     onReload(newPath = this.state.currentPath) {
 
         ajax('ls/', {'url': newPath})
-            .then(list => this.updateFiles(list))
+            .then(list => {
+                this.updateFiles(list);
+                localStorage.setItem('current-path', newPath);
+            })
             .catch(error => {
                 console.log(error);
             });
@@ -112,7 +115,8 @@ class Explorer extends React.Component {
     }
 
     componentDidMount() {
-        this.onReload();
+
+        this.changeCurrentPath(localStorage.getItem('current-path'));
     }
 
     filterList(text) {
