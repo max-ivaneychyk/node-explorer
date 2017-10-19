@@ -7,22 +7,23 @@ class Header extends React.Component {
     constructor(props){
         super(props);
 
-        this.onUp = this.onUp.bind(this);
+        this.onExitUp = this.onExitUp.bind(this);
         this.onRename = this.onRename.bind(this);
+        this.onReload = this.onReload.bind(this);
         this.onDelete = this.onDelete.bind(this);
         this.onCreateFolder = this.onCreateFolder.bind(this);
     }
 
     onCreateFolder () {
-
+        this.props.onCreateFolder();
     }
 
-    onUp () {
-
+    onExitUp () {
+        this.props.onExitUp();
     }
 
     onReload () {
-
+        this.props.onReload();
     }
 
     onRename () {
@@ -36,9 +37,9 @@ class Header extends React.Component {
     render() {
         return(
             <header>
-                <menu>
+                <menu className={this.props.currentPath ? 'show' : 'hide'}>
                     <li onClick={this.onCreateFolder}><p id='open-modal'> Новая папка </p></li>
-                    <li onClick={this.onUp}><p> Вверх </p></li>
+                    <li onClick={this.onExitUp}><p> Вверх </p></li>
                     <li onClick={this.onReload}><p> Обновить</p></li>
                     <li className={this.props.focusFile ? 'show' : 'hide'} onClick={this.onRename}><p> Переименовать</p></li>
                     <li className={this.props.focusFile ? 'show' : 'hide'} onClick={this.onDelete}><p> Удалить</p></li>

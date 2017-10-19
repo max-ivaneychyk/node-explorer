@@ -13,6 +13,9 @@
     display: inline-block;
 }
 
+.explorer {
+    min-width: 930px;
+}
 
 body {
     margin: 0 10px;

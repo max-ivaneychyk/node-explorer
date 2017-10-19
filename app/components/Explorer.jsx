@@ -9,7 +9,7 @@ import '../css/main.css';
 
 
 class Explorer extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             files: props.data.files,
@@ -17,58 +17,99 @@ class Explorer extends React.Component {
             currentPath: ''
         };
 
-        this.onReload = this.onReload.bind(this);
         this.onFocus = this.onFocus.bind(this);
+        this.onExitUp = this.onExitUp.bind(this);
+        this.onReload = this.onReload.bind(this);
         this.filterList = this.filterList.bind(this);
         this.updateFiles = this.updateFiles.bind(this);
-        this.changeCurrentPath = this.changeCurrentPath.bind(this);
+        this.onCreateFolder = this.onCreateFolder.bind(this);
         this.deleteSelected = this.deleteSelected.bind(this);
+        this.changeCurrentPath = this.changeCurrentPath.bind(this);
         this.renderComponentsFiles = this.renderComponentsFiles.bind(this);
     }
 
-    onReload (newPath = this.state.currentPath) {
+    onCreateFolder() {
+        let nameNewFolder = 'New Folder ';
+        let names = this.state.files.map(({name}) => {
+            return name;
+        });
+
+        for (let i = 1; i < names.length; i++) {
+            if (!names.includes(nameNewFolder.concat(i)) ) {
+                nameNewFolder += i;
+                break;
+            }
+        }
+
+        let dir = this.state.currentPath + nameNewFolder + '/';
+        ajax('command/', {'event': 'create-folder', 'dir': dir})
+            .then(list => this.onReload())
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+
+    onExitUp() {
+        let path = this.state.currentPath.replace(/[^\/]*\/$/, '');
+        if (!path.includes('//')) {
+            path = '';
+        }
+        this.changeCurrentPath(path);
+    }
+
+    onReload(newPath = this.state.currentPath) {
 
         ajax('ls/', {'url': newPath})
             .then(list => this.updateFiles(list))
-            .catch(error => { console.log(error); });
+            .catch(error => {
+                console.log(error);
+            });
     }
-    updateFiles (list) {
+
+    updateFiles(list) {
         this.props.data.files = list;
         this.setState({files: list});
     }
-    changeCurrentPath (fullPath) {
+
+    changeCurrentPath(fullPath) {
         this.setState({currentPath: fullPath});
         this.onReload(fullPath);
         this.deleteSelected();
     }
-    onFocus (file) {
+
+    onFocus(file) {
         this.setState({focusFile: file})
     }
-    deleteSelected () {
+
+    deleteSelected() {
         let selected = document.body.getElementsByClassName('selected-file');
         for (let el of selected) {
             el.classList.remove('selected-file');
         }
         this.setState({focusFile: null});
     }
-    componentDidMount () {
-       this.onReload();
+
+    componentDidMount() {
+        this.onReload();
     }
-    filterList(text){
-        let filteredList = this.props.files.filter(function(file){
-            return file.name.toLowerCase().search(text.toLowerCase())!== -1;
+
+    filterList(text) {
+        let filteredList = this.props.files.filter(function (file) {
+            return file.name.toLowerCase().search(text.toLowerCase()) !== -1;
         });
 
         this.setState({files: filteredList});
     }
-    renderComponentsFiles () {
+
+    renderComponentsFiles() {
         let pathFix = {
             'drive': '//',
             'directory': '/'
         };
 
-        return this.state.files.map( (data, key) => {
-            data.name = data.mounted || data.name
+        return this.state.files.map((data, key) => {
+            data.name = data.mounted || data.name;
             data.path = data.name + (pathFix[data.format] || '');
 
             return <File key={key}
@@ -78,12 +119,18 @@ class Explorer extends React.Component {
                          changeCurrentPath={this.changeCurrentPath}/>
         })
     }
+
     render() {
-        return(
-            <div className="explorer" >
-                <Header {...this.state} path={this.state.currentPath} />
+        return (
+            <div className="explorer">
+                <Header {...this.state}
+                        onExitUp={this.onExitUp}
+                        onReload={this.onReload}
+                        onCreateFolder={this.onCreateFolder}
+                        path={this.state.currentPath}/>
+
                 <div className='wrap' onMouseDown={this.deleteSelected}>
-                    { this.renderComponentsFiles() }
+                    {this.renderComponentsFiles()}
                 </div>
             </div>
         );
