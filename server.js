@@ -93,22 +93,6 @@ ee.on('path-exists', function (data) {
             data.callback('error', err);
         });
 });
-/*ee.emit('path-exists', {dir: 'C:\\\\test.tx', callback: function (status) {
-    console.log(status);
-}});*/
-
-
-ee.on('ensure-dir', function (data) {
-    let dir = data.dir;
-// With Promises:
-    fsExtra.ensureDir(dir)
-        .then(() => {
-            data.callback(true)
-        })
-        .catch(err => {
-            data.callback(false, err)
-        })
-});
 
 
 ee.on('rename-file', function (data) {
@@ -121,7 +105,7 @@ ee.on('rename-file', function (data) {
     });
 });
 
-// todo cool
+
 ee.on('delete', function (data) {
     let files = JSON.parse(data.files || '[]');
     files.forEach(function (filename) {

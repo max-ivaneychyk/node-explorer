@@ -36,7 +36,7 @@ class Explorer extends React.Component {
             return name;
         });
 
-        for (let i = 1; i < names.length; i++) {
+        for (let i = 1; i <= names.length; i++) {
             if (!names.includes(nameNewFolder.concat(i)) ) {
                 nameNewFolder += i;
                 break;
@@ -51,7 +51,6 @@ class Explorer extends React.Component {
             });
     }
 
-
     onExitUp() {
         let path = this.state.currentPath.replace(/[^\/]*\/$/, '');
         if (!path.includes('//')) {
@@ -59,6 +58,7 @@ class Explorer extends React.Component {
         }
         this.changeCurrentPath(path);
     }
+
     onRenameFile (oldName, newName) {
         let path = this.state.currentPath;
         if (oldName === newName) {
@@ -71,6 +71,7 @@ class Explorer extends React.Component {
                 console.log(error);
             });
     }
+
     onDeleteFile (name) {
         let path = this.state.currentPath;
         ajax('command/', {'event': 'delete', 'files': [path + name]})

@@ -146,7 +146,7 @@
 	                return name;
 	            });
 	
-	            for (var i = 1; i < names.length; i++) {
+	            for (var i = 1; i <= names.length; i++) {
 	                if (!names.includes(nameNewFolder.concat(i))) {
 	                    nameNewFolder += i;
 	                    break;
