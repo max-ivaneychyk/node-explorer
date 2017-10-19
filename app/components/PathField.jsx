@@ -12,9 +12,6 @@ class PathField extends React.Component{
         this.onBlur = this.onBlur.bind(this);
         this.onTextChanged = this.onTextChanged.bind(this);
 
-        Event.on('path-change', newPath => {
-            this.setState({path: newPath})
-        });
     }
 
     onTextChanged(e){
