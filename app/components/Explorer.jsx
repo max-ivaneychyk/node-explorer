@@ -20,6 +20,8 @@ class Explorer extends React.Component {
         this.onFocus = this.onFocus.bind(this);
         this.onExitUp = this.onExitUp.bind(this);
         this.onReload = this.onReload.bind(this);
+        this.onDeleteFile = this.onDeleteFile.bind(this);
+        this.onRenameFile = this.onRenameFile.bind(this);
         this.filterList = this.filterList.bind(this);
         this.updateFiles = this.updateFiles.bind(this);
         this.onCreateFolder = this.onCreateFolder.bind(this);
@@ -42,7 +44,7 @@ class Explorer extends React.Component {
         }
 
         let dir = this.state.currentPath + nameNewFolder + '/';
-        ajax('command/', {'event': 'create-folder', 'dir': dir})
+        ajax('command/', {'event': 'create-folder', 'path': dir})
             .then(list => this.onReload())
             .catch(error => {
                 console.log(error);
@@ -57,7 +59,26 @@ class Explorer extends React.Component {
         }
         this.changeCurrentPath(path);
     }
+    onRenameFile (oldName, newName) {
+        let path = this.state.currentPath;
+        if (oldName === newName) {
+            return false;
+        }
 
+        ajax('command/', {'event': 'rename-file', 'path': path + oldName, 'newPath': path + newName})
+            .then(list => this.onReload())
+            .catch(error => {
+                console.log(error);
+            });
+    }
+    onDeleteFile (name) {
+        let path = this.state.currentPath;
+        ajax('command/', {'event': 'delete', 'files': [path + name]})
+            .then(list => this.onReload())
+            .catch(error => {
+                console.log(error);
+            });
+    }
     onReload(newPath = this.state.currentPath) {
 
         ajax('ls/', {'url': newPath})
@@ -115,6 +136,8 @@ class Explorer extends React.Component {
             return <File key={key}
                          data={data}
                          onFocus={this.onFocus}
+                         onRenameFile={this.onRenameFile}
+                         onDeleteFile={this.onDeleteFile}
                          currentPath={this.state.currentPath}
                          changeCurrentPath={this.changeCurrentPath}/>
         })

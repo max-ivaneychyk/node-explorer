@@ -123,6 +123,8 @@
 	        _this.onFocus = _this.onFocus.bind(_this);
 	        _this.onExitUp = _this.onExitUp.bind(_this);
 	        _this.onReload = _this.onReload.bind(_this);
+	        _this.onDeleteFile = _this.onDeleteFile.bind(_this);
+	        _this.onRenameFile = _this.onRenameFile.bind(_this);
 	        _this.filterList = _this.filterList.bind(_this);
 	        _this.updateFiles = _this.updateFiles.bind(_this);
 	        _this.onCreateFolder = _this.onCreateFolder.bind(_this);
@@ -152,7 +154,7 @@
 	            }
 	
 	            var dir = this.state.currentPath + nameNewFolder + '/';
-	            (0, _ajax2.default)('command/', { 'event': 'create-folder', 'dir': dir }).then(function (list) {
+	            (0, _ajax2.default)('command/', { 'event': 'create-folder', 'path': dir }).then(function (list) {
 	                return _this2.onReload();
 	            }).catch(function (error) {
 	                console.log(error);
@@ -168,15 +170,43 @@
 	            this.changeCurrentPath(path);
 	        }
 	    }, {
+	        key: 'onRenameFile',
+	        value: function onRenameFile(oldName, newName) {
+	            var _this3 = this;
+	
+	            var path = this.state.currentPath;
+	            if (oldName === newName) {
+	                return false;
+	            }
+	
+	            (0, _ajax2.default)('command/', { 'event': 'rename-file', 'path': path + oldName, 'newPath': path + newName }).then(function (list) {
+	                return _this3.onReload();
+	            }).catch(function (error) {
+	                console.log(error);
+	            });
+	        }
+	    }, {
+	        key: 'onDeleteFile',
+	        value: function onDeleteFile(name) {
+	            var _this4 = this;
+	
+	            var path = this.state.currentPath;
+	            (0, _ajax2.default)('command/', { 'event': 'delete', 'files': [path + name] }).then(function (list) {
+	                return _this4.onReload();
+	            }).catch(function (error) {
+	                console.log(error);
+	            });
+	        }
+	    }, {
 	        key: 'onReload',
 	        value: function onReload() {
-	            var _this3 = this;
+	            var _this5 = this;
 	
 	            var newPath = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.currentPath;
 	
 	
 	            (0, _ajax2.default)('ls/', { 'url': newPath }).then(function (list) {
-	                return _this3.updateFiles(list);
+	                return _this5.updateFiles(list);
 	            }).catch(function (error) {
 	                console.log(error);
 	            });
@@ -247,7 +277,7 @@
 	    }, {
 	        key: 'renderComponentsFiles',
 	        value: function renderComponentsFiles() {
-	            var _this4 = this;
+	            var _this6 = this;
 	
 	            var pathFix = {
 	                'drive': '//',
@@ -260,9 +290,11 @@
 	
 	                return _react2.default.createElement(_File2.default, { key: key,
 	                    data: data,
-	                    onFocus: _this4.onFocus,
-	                    currentPath: _this4.state.currentPath,
-	                    changeCurrentPath: _this4.changeCurrentPath });
+	                    onFocus: _this6.onFocus,
+	                    onRenameFile: _this6.onRenameFile,
+	                    onDeleteFile: _this6.onDeleteFile,
+	                    currentPath: _this6.state.currentPath,
+	                    changeCurrentPath: _this6.changeCurrentPath });
 	            });
 	        }
 	    }, {
@@ -2667,7 +2699,7 @@
 	    }, {
 	        key: 'onRename',
 	        value: function onRename() {
-	            this.props.focusFile.onRename();
+	            this.props.focusFile.onStartRename();
 	        }
 	    }, {
 	        key: 'onDelete',
@@ -3280,7 +3312,7 @@
 	
 	
 	// module
-	exports.push([module.id, "header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader li:active {\r\n    color: #61a0d8;\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n    user-select: none;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}", "", {"version":3,"sources":["D:/node/node-explorer/app/css/header.css"],"names":[],"mappings":"AAAA;IACI,sBAAsB;IACtB,gBAAgB;IAChB,mBAAmB;;CAEtB;;AAED;IACI,eAAe;CAClB;;AAED;IACI,UAAU;CACb;;AAED;IACI,iCAAiC;IACjC,kBAAkB;IAClB,mBAAmB;IACnB,sCAAsC;IACtC,WAAW;IACX,OAAO;IACP,YAAY;IACZ,eAAe;IACf,yBAAyB;IACzB,sBAAsB;IACtB,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,kBAAkB;;CAErB;;AAED;;IAEI,mBAAmB;IACnB,WAAW;IACX,SAAS;IACT,sBAAsB;IACtB,WAAW;IACX,iBAAiB;IACjB,0BAA0B;IAC1B,mBAAmB;IACnB,qCAAqC;IACrC,YAAY;CACf;;AAED;IACI,UAAU;CACb;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;;IAEI,YAAY;IACZ,UAAU;CACb;;AAED;IACI,sCAAsC;CACzC","file":"header.css","sourcesContent":["header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n\r\n}\r\n\r\nheader li:active {\r\n    color: #61a0d8;\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n    user-select: none;\r\n\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}"],"sourceRoot":""}]);
+	exports.push([module.id, "header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n    transition: opacity 1s;\r\n}\r\n\r\nheader li:active {\r\n    color: #61a0d8;\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n    user-select: none;\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}", "", {"version":3,"sources":["D:/node/node-explorer/app/css/header.css"],"names":[],"mappings":"AAAA;IACI,sBAAsB;IACtB,gBAAgB;IAChB,mBAAmB;IACnB,uBAAuB;CAC1B;;AAED;IACI,eAAe;CAClB;;AAED;IACI,UAAU;CACb;;AAED;IACI,iCAAiC;IACjC,kBAAkB;IAClB,mBAAmB;IACnB,sCAAsC;IACtC,WAAW;IACX,OAAO;IACP,YAAY;IACZ,eAAe;IACf,yBAAyB;IACzB,sBAAsB;IACtB,qBAAqB;IACrB,oBAAoB;IACpB,iBAAiB;IACjB,kBAAkB;CACrB;;AAED;;IAEI,mBAAmB;IACnB,WAAW;IACX,SAAS;IACT,sBAAsB;IACtB,WAAW;IACX,iBAAiB;IACjB,0BAA0B;IAC1B,mBAAmB;IACnB,qCAAqC;IACrC,YAAY;CACf;;AAED;IACI,UAAU;CACb;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;IACI,WAAW;IACX,0BAA0B;CAC7B;;AAED;;IAEI,YAAY;IACZ,UAAU;CACb;;AAED;IACI,sCAAsC;CACzC","file":"header.css","sourcesContent":["header li {\r\n    display: inline-block;\r\n    cursor: pointer;\r\n    margin-right: 20px;\r\n    transition: opacity 1s;\r\n}\r\n\r\nheader li:active {\r\n    color: #61a0d8;\r\n}\r\n\r\nheader menu {\r\n    margin: 0;\r\n}\r\n\r\nheader {\r\n    border-bottom: 1px solid #ebebeb;\r\n    background: white;\r\n    position: relative;\r\n    background: rgba(255, 255, 255, 0.86);\r\n    z-index: 2;\r\n    top: 0;\r\n    width: 100%;\r\n    display: block;\r\n    position: -webkit-sticky;\r\n    position: -moz-sticky;\r\n    position: -ms-sticky;\r\n    position: -o-sticky;\r\n    position: sticky;\r\n    user-select: none;\r\n}\r\n\r\n.explorer-path,\r\n.search {\r\n    position: absolute;\r\n    right: 30%;\r\n    top: 29%;\r\n    display: inline-block;\r\n    width: 14%;\r\n    overflow: hidden;\r\n    border: 1px solid #cccccc;\r\n    border-radius: 6px;\r\n    transition: width 0.5s ease-out 0.1s;\r\n    height: 46%;\r\n}\r\n\r\n.search {\r\n    left: 72%;\r\n}\r\n\r\n.explorer-path.active {\r\n    width: 70%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search.active {\r\n    width: 28%;\r\n    border: 1px solid #419acc;\r\n}\r\n\r\n.search input,\r\n.explorer-path input {\r\n    width: 100%;\r\n    border: 0;\r\n}\r\n\r\ninput:focus {\r\n    outline-color: transparent !important;\r\n}"],"sourceRoot":""}]);
 	
 	// exports
 
@@ -3853,11 +3885,15 @@
 	
 	        var _this = _possibleConstructorReturn(this, (File.__proto__ || Object.getPrototypeOf(File)).call(this, props));
 	
-	        _this.state = { renameFlag: false };
+	        _this.state = { renameFlag: false, changedName: props.data.name };
 	        _this.onOpen = _this.onOpen.bind(_this);
 	        _this.onSelect = _this.onSelect.bind(_this);
-	        _this.onRename = _this.onRename.bind(_this);
+	        _this.onStartRename = _this.onStartRename.bind(_this);
 	        _this.onDelete = _this.onDelete.bind(_this);
+	        _this.onEndRename = _this.onEndRename.bind(_this);
+	        _this.onTypeNewName = _this.onTypeNewName.bind(_this);
+	        _this.editNameRender = _this.editNameRender.bind(_this);
+	        _this.componentDidUpdate = _this.componentDidUpdate.bind(_this);
 	        return _this;
 	    }
 	
@@ -3875,20 +3911,44 @@
 	            this.props.onFocus(this);
 	        }
 	    }, {
-	        key: 'onRename',
-	        value: function onRename() {
-	            console.log('rename');
+	        key: 'onStartRename',
+	        value: function onStartRename() {
+	            this.setState({ renameFlag: true });
+	        }
+	    }, {
+	        key: 'onTypeNewName',
+	        value: function onTypeNewName(e) {
+	            var text = e.target.value.trim(); // удаляем пробелы
+	            this.setState({ changedName: text });
+	        }
+	    }, {
+	        key: 'onEndRename',
+	        value: function onEndRename() {
+	            this.setState({ renameFlag: false });
+	            this.props.onRenameFile(this.props.data.name, this.state.changedName);
 	        }
 	    }, {
 	        key: 'onDelete',
 	        value: function onDelete() {
-	            console.log('delete');
+	            this.props.onDeleteFile(this.props.data.name);
 	        }
 	    }, {
 	        key: 'editNameRender',
 	        value: function editNameRender(name) {
-	            var inputStyle = { zIndex: 100 };
-	            return _react2.default.createElement('input', { className: 'title', value: name, type: 'text', style: inputStyle });
+	            var inputStyle = {
+	                zIndex: 100,
+	                width: '100%',
+	                marginLeft: 0,
+	                textAlign: 'left'
+	            };
+	
+	            return _react2.default.createElement('input', { className: 'title',
+	                ref: 'inputChangeName',
+	                value: this.state.changedName,
+	                onChange: this.onTypeNewName,
+	                onBlur: this.onEndRename,
+	                type: 'text',
+	                style: inputStyle });
 	        }
 	    }, {
 	        key: 'normalNameRender',
@@ -3923,6 +3983,13 @@
 	                    ' '
 	                )
 	            );
+	        }
+	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            if (this.refs.inputChangeName) {
+	                this.refs.inputChangeName.focus();
+	            }
 	        }
 	    }]);
 	
@@ -4003,7 +4070,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);", ""]);
 	
 	// module
-	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    display: none;\r\n}\r\n.show {\r\n    display: inline-block;\r\n}\r\n\r\n.explorer {\r\n    min-width: 930px;\r\n}\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["D:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;AAED;IACI,cAAc;CACjB;AACD;IACI,sBAAsB;CACzB;;AAED;IACI,iBAAiB;CACpB;;AAED;IACI,eAAe;IACf,aAAa;IACb,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;;AAGD;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    display: none;\r\n}\r\n.show {\r\n    display: inline-block;\r\n}\r\n\r\n.explorer {\r\n    min-width: 930px;\r\n}\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
+	exports.push([module.id, "*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    visibility: hidden;\r\n    opacity: 0;\r\n}\r\n.show {\r\n    visibility: visible;\r\n    opacity: 1;\r\n}\r\n\r\n.explorer {\r\n    min-width: 930px;\r\n}\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n", "", {"version":3,"sources":["D:/node/node-explorer/app/css/main.css"],"names":[],"mappings":"AAEA;;;IAGI,uBAAuB;CAC1B;;AAED;IACI,mBAAmB;IACnB,WAAW;CACd;AACD;IACI,oBAAoB;IACpB,WAAW;CACd;;AAED;IACI,iBAAiB;CACpB;;AAED;IACI,eAAe;IACf,aAAa;IACb,eAAe;IACf,kCAAkC;IAClC,gBAAgB;IAChB,iBAAiB;IACjB,iBAAiB;CACpB;;AAED;IACI,mBAAmB;IACnB,mBAAmB;IACnB,eAAe;IACf,aAAa;IACb,UAAU;CACb;;AAED;IACI,sBAAsB;IACtB,aAAa;IACb,cAAc;IACd,aAAa;IACb,4CAA4C;IAC5C,mBAAmB;IACnB,mBAAmB;IACnB,iBAAiB;CACpB;;AAED;IACI,qCAAqC;IACrC,4CAA4C;CAC/C;;AAED;IACI,2CAA2C;CAC9C;;;AAGD;IACI,cAAc;IACd,iBAAiB;IACjB,mBAAmB;IACnB,4BAA4B;IAC5B,wBAAwB;CAC3B;;AAED;IACI,mBAAmB;IACnB,OAAO;IACP,QAAQ;IACR,YAAY;IACZ,aAAa;CAChB;;;AAGD,aAAa;AACb;IACI,WAAW;IACX,YAAY;IACZ,iBAAiB;IACjB,eAAe;IACf,gDAAgD;IAChD,2BAA2B;IAC3B,sBAAsB;CACzB;;;AAGD;IACI,8CAA8C;IAC9C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,2CAA2C;IAC3C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,6CAA6C;IAC7C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,4CAA4C;IAC5C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;IACI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB;;AAED;;;;;IAKI,+CAA+C;IAC/C,2BAA2B;IAC3B,sBAAsB;CACzB","file":"main.css","sourcesContent":["@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);\r\n\r\n*,\r\n*::before,\r\n*::after {\r\n    box-sizing: border-box;\r\n}\r\n\r\n.hide {\r\n    visibility: hidden;\r\n    opacity: 0;\r\n}\r\n.show {\r\n    visibility: visible;\r\n    opacity: 1;\r\n}\r\n\r\n.explorer {\r\n    min-width: 930px;\r\n}\r\n\r\nbody {\r\n    margin: 0 10px;\r\n    height: 100%;\r\n    color: #595959;\r\n    font-family: \"Roboto\", sans-serif;\r\n    font-size: 16px;\r\n    font-weight: 300;\r\n    line-height: 1.5;\r\n}\r\n\r\n.center-page {\r\n    text-align: center;\r\n    position: relative;\r\n    display: block;\r\n    opacity: 0.5;\r\n    top: 50vh;\r\n}\r\n\r\n.one-file {\r\n    display: inline-block;\r\n    width: 100px;\r\n    height: 110px;\r\n    margin: 11px;\r\n    border: 1px solid rgba(202, 202, 202, 0.37);\r\n    border-radius: 3px;\r\n    position: relative;\r\n    overflow: hidden;\r\n}\r\n\r\n.one-file:hover {\r\n    background: rgba(55, 153, 202, 0.24);\r\n    border: 1px solid rgba(202, 202, 202, 0.01);\r\n}\r\n\r\n.event-layer.selected-file {\r\n    border: 1px solid rgba(55, 153, 202, 0.41);\r\n}\r\n\r\n\r\n.title {\r\n    margin: 2% 9%;\r\n    font-size: 0.8em;\r\n    text-align: center;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis;\r\n}\r\n\r\n.event-layer {\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n}\r\n\r\n\r\n/* formats */\r\n.icon {\r\n    width: 70%;\r\n    height: 70%;\r\n    margin-left: 15%;\r\n    margin-top: 5%;\r\n    background: url(\"../img/default.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n\r\n.drive {\r\n    background: url(\"../img/drive.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.zip {\r\n    background: url(\"../img/zip.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.doc, .docx {\r\n    background: url(\"../img/doc.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.js {\r\n    background: url(\"../img/js.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.html, .htm {\r\n    background: url(\"../img/html.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.css {\r\n    background: url(\"../img/css.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.pdf {\r\n    background: url(\"../img/pdf.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.txt {\r\n    background: url(\"../img/txt.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.sys {\r\n    background: url(\"../img/sys.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.rar {\r\n    background: url(\"../img/rar.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.ini {\r\n    background: url(\"../img/ini.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.directory {\r\n    background: url(\"../img/folder.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n.png,\r\n.gif,\r\n.bmp,\r\n.jpg,\r\n.JPG {\r\n    background: url(\"../img/png-35.png\") no-repeat;\r\n    background-size: 100% auto;\r\n    display: inline-block;\r\n}\r\n\r\n"],"sourceRoot":""}]);
 	
 	// exports
 

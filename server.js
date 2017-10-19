@@ -26,6 +26,7 @@ diskinfo.getDrives(function (err, aDrives) {
 
 ee.on('get-disks', function (data) {
     // GET DISK
+    console.log('GET-FILES-DISKS ');
     data.callback(disks);
 });
 
@@ -35,13 +36,13 @@ ee.on('get-files-from-dir', function (data) {
     let currentDirPath = data.path.replace(/\$plus/gim, '+');
     let list = [];
 
-    console.log(currentDirPath);
     fs.readdir(currentDirPath, function (err, files) {
         if (err) {
             console.log(err);
             data.callback({error: err});
             return;
         }
+
         files.forEach(function (name) {
             // .SYS  не обрабативаем, нет прав
             var filePath = path.join(currentDirPath, name);
@@ -49,7 +50,7 @@ ee.on('get-files-from-dir', function (data) {
             try {
                 stat = fs.statSync(filePath);
             } catch (errFile) {
-                console.log('Cant read system file ', errFile);
+                //console.log('Cant read system file ', errFile);
                 return;
             }
 
@@ -59,6 +60,7 @@ ee.on('get-files-from-dir', function (data) {
                 list.push({name: name, stat: stat, format: 'directory'});
             }
         });
+        console.log('GET-FILES-FROM ', currentDirPath);
         // send data to client
         data.callback(list);
     });
@@ -67,10 +69,11 @@ ee.on('get-files-from-dir', function (data) {
 
 // СОЗДАТЬ ДИРЕКТОРИЮ
 ee.on('create-folder', function (data) {
-    let dir = data.dir;
+    let dir = data.path;
 
     fsExtra.ensureDir(dir)
         .then(() => {
+            console.log('CREATE-NEW-FOLDER ', dir);
             data.callback('success');
         })
         .catch(err => {
@@ -109,14 +112,21 @@ ee.on('ensure-dir', function (data) {
 
 
 ee.on('rename-file', function (data) {
-
+    fs.rename(data.path, data.newPath, (err) => {
+        if (err) {
+            return console.log(err);
+        }
+        console.log('RENAME-FILE ', data.path, ' TO ', data.newPath);
+        data.callback(true);
+    });
 });
 
 // todo cool
 ee.on('delete', function (data) {
     let files = JSON.parse(data.files || '[]');
     files.forEach(function (filename) {
-        fs.unlink(filename);
+        console.log('DELETE-FILE ', filename);
+        fsExtra.removeSync(filename);
     });
     data.callback();
 });
@@ -150,6 +160,7 @@ app.post('/ls/', urlencodedParser, function (req, res) {
 app.post('/command/', urlencodedParser, function (req, res) {
     const events = [
         'create-folder',
+        'rename-file',
         'delete'
     ];
 
@@ -163,10 +174,9 @@ app.post('/command/', urlencodedParser, function (req, res) {
         return;
     }
 
-    console.log(req.body);
-
     ee.emit(eventName, {
-        dir: req.body.dir,
+        path: req.body.path,
+        newPath: req.body.newPath,
         files: req.body.files,
         callback: function (status) {
             let data = JSON.stringify({status: status});
@@ -174,7 +184,6 @@ app.post('/command/', urlencodedParser, function (req, res) {
             res.end(data);
         }
     });
-
 });
 
 

@@ -2,7 +2,7 @@ header li {
     display: inline-block;
     cursor: pointer;
     margin-right: 20px;
-
+    transition: opacity 1s;
 }
 
 header li:active {
@@ -28,7 +28,6 @@ header {
     position: -o-sticky;
     position: sticky;
     user-select: none;
-
 }
 
 .explorer-path,

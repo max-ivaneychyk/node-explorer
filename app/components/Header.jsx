@@ -27,7 +27,7 @@ class Header extends React.Component {
     }
 
     onRename () {
-        this.props.focusFile.onRename();
+        this.props.focusFile.onStartRename();
     }
 
     onDelete () {
