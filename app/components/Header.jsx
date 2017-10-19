@@ -45,7 +45,7 @@ class Header extends React.Component {
                     <li className={this.props.focusFile ? 'show' : 'hide'} onClick={this.onDelete}><p> Удалить</p></li>
                 </menu>
                 <PathField path={this.props.path}/>
-                <SearchPlugin filter={this.props.filterList}/>
+                <SearchPlugin filter={this.props.filterList} path={this.props.path}/>
             </header>
         );
     }

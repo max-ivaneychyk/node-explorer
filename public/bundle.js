@@ -2759,7 +2759,7 @@
 	                    )
 	                ),
 	                _react2.default.createElement(_PathField2.default, { path: this.props.path }),
-	                _react2.default.createElement(_SearchPlugin2.default, { filter: this.props.filterList })
+	                _react2.default.createElement(_SearchPlugin2.default, { filter: this.props.filterList, path: this.props.path })
 	            );
 	        }
 	    }]);
@@ -2773,7 +2773,7 @@
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -2809,35 +2809,32 @@
 	        _this.onBlur = _this.onBlur.bind(_this);
 	        _this.onTextChanged = _this.onTextChanged.bind(_this);
 	
-	        Event.on('path-change', function (newPath) {
-	            _this.setState({ path: newPath });
-	        });
 	        return _this;
 	    }
 	
 	    _createClass(PathField, [{
-	        key: 'onTextChanged',
+	        key: "onTextChanged",
 	        value: function onTextChanged(e) {
 	            var text = e.target.value.trim(); // удаляем пробелы
 	            this.setState({ path: text });
 	        }
 	    }, {
-	        key: 'onBlur',
+	        key: "onBlur",
 	        value: function onBlur() {
 	            this.setState({ focus: false });
 	        }
 	    }, {
-	        key: 'onFocus',
+	        key: "onFocus",
 	        value: function onFocus() {
 	            this.setState({ focus: true });
 	        }
 	    }, {
-	        key: 'render',
+	        key: "render",
 	        value: function render() {
 	            return _react2.default.createElement(
-	                'div',
+	                "div",
 	                { className: [this.state.focus ? "active" : "disable", "explorer-path"].join(' ') },
-	                _react2.default.createElement('input', { value: this.props.path,
+	                _react2.default.createElement("input", { value: this.props.path,
 	                    onChange: this.onTextChanged,
 	                    onBlur: this.onBlur,
 	                    onFocus: this.onFocus })
@@ -2892,6 +2889,7 @@
 	        _this.onFocus = _this.onFocus.bind(_this);
 	        _this.onBlur = _this.onBlur.bind(_this);
 	        _this.onTextChanged = _this.onTextChanged.bind(_this);
+	        _this.componentWillUpdate = _this.componentWillUpdate.bind(_this);
 	
 	        props.filter('');
 	        return _this;
@@ -2907,13 +2905,19 @@
 	    }, {
 	        key: 'onBlur',
 	        value: function onBlur() {
-	            this.setState({ focus: false, text: '' });
-	            this.props.filter('');
+	            this.setState({ focus: false });
 	        }
 	    }, {
 	        key: 'onFocus',
 	        value: function onFocus() {
 	            this.setState({ focus: true });
+	        }
+	    }, {
+	        key: 'componentWillUpdate',
+	        value: function componentWillUpdate(nextProps) {
+	            if (nextProps.path !== this.props.path) {
+	                this.setState({ text: '' });
+	            }
 	        }
 	    }, {
 	        key: 'render',

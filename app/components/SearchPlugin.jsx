@@ -12,6 +12,7 @@ class SearchPlugin extends React.Component{
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onTextChanged = this.onTextChanged.bind(this);
+        this.componentWillUpdate = this.componentWillUpdate.bind(this);
 
         props.filter('');
     }
@@ -21,11 +22,15 @@ class SearchPlugin extends React.Component{
         this.props.filter(text);
     }
     onBlur () {
-        this.setState({focus: false, text: ''});
-        this.props.filter('');
+        this.setState({focus: false});
     }
     onFocus () {
         this.setState({focus: true});
+    }
+    componentWillUpdate (nextProps) {
+        if (nextProps.path !== this.props.path) {
+            this.setState({text: ''});
+        }
     }
     render() {
         return (
