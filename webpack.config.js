@@ -1,5 +1,5 @@
 let NODE_ENV = 'development';
-
+let webpack = require('webpack');
 let PrettierPlugin = require("prettier-webpack-plugin");
 let path = require("path");
 let ExtractTextPlugin = require("extract-text-webpack-plugin");
@@ -7,14 +7,17 @@ let WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 
 
 module.exports = {
-    entry: ["./app/app.jsx", './app/less/index.less'], // входная точка - исходный файл
+    entry: { // входная точка - исходный файл
+       bundle: "./app/app.jsx",
+       style: './app/less/index.less'
+    },
     output:{
-        path: path.resolve(__dirname, './public'),     // путь к каталогу выходных файлов - папка public
+        path: path.join(__dirname, 'public'),     // путь к каталогу выходных файлов - папка public
         publicPath: '/public/',
-        filename: "[name]"       // название создаваемого файла
+        filename: "[name].js"       // название создаваемого файла
     },
     resolve:{
-        extensions: [".jsx", ".js", ".less", ".css"] // расширения для загрузки модулей
+        extensions: [".js", ".jsx", ".less", ".css"] // расширения для загрузки модулей
     },
     // source map
     devtool: NODE_ENV === 'development' ? 'source-map' : false,
@@ -26,7 +29,14 @@ module.exports = {
     module:{
         loaders: [
             {
-                test: /\.jsx?$/,
+                test: /\.jsx$/,
+                exclude: [/node_modules/],
+                loader: "babel-loader",
+                query: {
+                    presets: ['es2015', 'react', 'stage-0', 'stage-1']
+                }
+            },{
+                test: /\.js$/,
                 exclude: [/node_modules/],
                 loader: "babel-loader",
                 query: {
@@ -56,7 +66,14 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         // output css folder and name file
+        // остановить сборку при ошибках
+        new webpack.NoErrorsPlugin(),
+        // глобальная переменные для разработки: c NODE_ENV js файлах
+        new webpack.DefinePlugin({
+            NODE_ENV: JSON.stringify(NODE_ENV)
+        }),
         new ExtractTextPlugin({
           filename: "style.css"
         })
@@ -70,5 +87,14 @@ module.exports = {
                 extensions: [ ".js", ".jsx" ]  // Which file extensions to process
             }
         )*/
-    ]
+    ],
+    devServer: {
+        port: 9000,
+        contentBase: path.join(__dirname, "public"),
+        proxy: {
+            "**": "http://localhost:3000"
+        },
+        historyApiFallback: true,
+        noInfo: true
+    }
 };

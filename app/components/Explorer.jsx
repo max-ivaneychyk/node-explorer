@@ -134,7 +134,7 @@ class Explorer extends React.Component {
 	}
 
 	componentDidMount() {
-		this.changeCurrentPath(localStorage.getItem("current-path"));
+		this.changeCurrentPath(localStorage.getItem("current-path") || ' ');
 	}
 
 	filterList(text) {

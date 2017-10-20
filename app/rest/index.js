@@ -12,10 +12,9 @@ class Rest {
 	}
 	static dataToString(data) {
 		let body = "";
-
 		for (let key in data) {
 			if (data.hasOwnProperty(key)) {
-				let val = data[key].push ? JSON.stringify(data[key]) : data[key];
+				let val = data && data[key].push ? JSON.stringify(data[key]) : data[key];
 				body += key + "=" + val + "&";
 			}
 		}
@@ -35,5 +34,6 @@ class Rest {
 		return new Rest("DELETE", url + "?" + Rest.dataToString(data));
 	}
 }
+
 
 export default Rest;

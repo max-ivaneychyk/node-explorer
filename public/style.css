@@ -1,93 +1,71 @@
-header li {
-    display: inline-block;
-    cursor: pointer;
-    margin-right: 20px;
-    transition: opacity 1s;
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);header li {
+  display: inline-block;
+  cursor: pointer;
+  margin-right: 20px;
+  -webkit-transition: opacity 1s;
+  -o-transition: opacity 1s;
+  transition: opacity 1s;
 }
-
 header li:active {
-    color: #61a0d8;
+  color: #61a0d8;
 }
-
 header menu {
-    margin: 0;
+  margin: 0;
 }
-
 header {
-    border-bottom: 1px solid #ebebeb;
-    background: white;
-    position: relative;
-    background: rgba(255, 255, 255, 0.86);
-    z-index: 2;
-    top: 0;
-    width: 100%;
-    display: block;
-    position: -webkit-sticky;
-    position: -moz-sticky;
-    position: -ms-sticky;
-    position: -o-sticky;
-    position: sticky;
-    user-select: none;
+  border-bottom: 1px solid #ebebeb;
+  position: relative;
+  background: rgba(255, 255, 255, 0.86);
+  z-index: 2;
+  top: 0;
+  width: 100%;
+  display: block;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }
-
 .explorer-path,
 .search {
-    position: absolute;
-    right: 30%;
-    top: 29%;
-    display: inline-block;
-    width: 14%;
-    overflow: hidden;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    transition: width 0.5s ease-out 0.1s;
-    height: 46%;
+  position: absolute;
+  right: 30%;
+  top: 29%;
+  display: inline-block;
+  width: 14%;
+  overflow: hidden;
+  border: 1px solid #cccccc;
+  -webkit-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-transition: width 0.5s ease-out 0.1s;
+  -o-transition: width 0.5s ease-out 0.1s;
+  transition: width 0.5s ease-out 0.1s;
+  height: 46%;
 }
-
 .search {
-    left: 72%;
+  left: 72%;
 }
-
 .explorer-path.active {
-    width: 70%;
-    border: 1px solid #419acc;
+  width: 70%;
+  border: 1px solid #419acc;
 }
-
 .search.active {
-    width: 28%;
-    border: 1px solid #419acc;
+  width: 28%;
+  border: 1px solid #419acc;
 }
-
 .search input,
 .explorer-path input {
-    width: 100%;
-    border: 0;
+  width: 100%;
+  border: 0;
 }
-
 input:focus {
-    outline-color: transparent !important;
-}@import url(https://fonts.googleapis.com/css?family=Roboto:400,300);
-.modal-wrap {
-    display: block;
-    position: fixed;
-    z-index: 9999;
-    width: 100%;
-    height:100%;
-    top:0;
-    left:0;
-    background: rgba(0, 0, 0, 0.44);
+  outline-color: transparent !important;
 }
-#modal-custom {
-    display: block;
-    top: 50%;
-    margin: 0 auto;
-    width: 350px;
-    height: 151px;
-    position: relative;
-    background: white;
-    border: 1px solid rgba(58, 58, 58, 0.29);
-    border-radius: 6px;
-}*,
+*,
 *::before,
 *::after {
   -webkit-box-sizing: border-box;
@@ -234,6 +212,28 @@ body {
   background: url("../img/png-35.png") no-repeat;
   background-size: 100% auto;
   display: inline-block;
+}
+.modal-wrap {
+  display: block;
+  position: fixed;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.44);
+}
+#modal-custom {
+  display: block;
+  top: 50%;
+  margin: 0 auto;
+  width: 350px;
+  height: 151px;
+  position: relative;
+  background: white;
+  border: 1px solid rgba(58, 58, 58, 0.29);
+  -webkit-border-radius: 6px;
+          border-radius: 6px;
 }
 
 /*# sourceMappingURL=style.css.map*/
