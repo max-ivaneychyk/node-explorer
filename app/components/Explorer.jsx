@@ -43,7 +43,13 @@ class Explorer extends React.Component {
 
 		let dir = this.state.currentPath + nameNewFolder + "/";
 		Rest.post("file", { dir })
-			.then(list => this.onReload())
+			.then(list => {
+                this.setState({files: [].concat(this.state.files, {
+                	format: 'directory',
+					name: nameNewFolder,
+					path: nameNewFolder + '/'
+				})});
+            })
 			.catch(error => {
 				console.log(error);
 			});
@@ -67,7 +73,14 @@ class Explorer extends React.Component {
 			path: path + oldName,
 			newPath: path + newName
 		})
-			.then(list => this.onReload())
+			.then( () => {
+                this.props.data.files.forEach((file) => {
+                	if (file.name === oldName) {
+                		file.name = newName;
+					}
+                });
+                this.setState({files: this.props.data.files});
+            })
 			.catch(error => {
 				console.log(error);
 			});
@@ -77,7 +90,12 @@ class Explorer extends React.Component {
 		let path = this.state.currentPath;
 
 		Rest.del("file", { dir: path + name })
-			.then(list => this.onReload())
+			.then( () => {
+                let updatenFiles = this.props.data.files.filter((file) => {
+                    return file.name !== name;
+				});
+                this.setState({files: updatenFiles});
+            })
 			.catch(error => {
 				console.log(error);
 			});

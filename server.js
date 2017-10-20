@@ -134,7 +134,8 @@ app.post("/file", urlencodedParser, function (req, res) {
 app.delete('/file', function (req, res) {
     let filename = req.query.dir;
 
-    fsExtra.remove(filename)
+    fsExtra
+        .remove(filename)
         .then(() => {
             res.json({dir})
         })
@@ -147,7 +148,8 @@ app.put('/file', urlencodedParser, function (req, res) {
    let path = req.body.path;
    let newPath = req.body.newPath;
 
-    fsExtra.rename(path, newPath)
+    fsExtra
+        .rename(path, newPath)
         .then(() => {
             res.json({path, newPath})
         })
