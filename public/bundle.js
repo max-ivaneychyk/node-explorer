@@ -151,7 +151,14 @@
 	
 				var dir = this.state.currentPath + nameNewFolder + "/";
 				_rest2.default.post("file", { dir: dir }).then(function (list) {
-					return _this2.onReload();
+					_this2.props.data.files.push({
+						format: 'directory',
+						name: nameNewFolder,
+						renameFlag: true,
+						path: nameNewFolder + '/'
+					});
+	
+					_this2.setState({ files: _this2.props.data.files });
 				}).catch(function (error) {
 					console.log(error);
 				});
@@ -178,8 +185,13 @@
 				_rest2.default.put("file", {
 					path: path + oldName,
 					newPath: path + newName
-				}).then(function (list) {
-					return _this3.onReload();
+				}).then(function () {
+					_this3.props.data.files.forEach(function (file) {
+						if (file.name === oldName) {
+							file.name = newName;
+						}
+					});
+					_this3.setState({ files: _this3.props.data.files });
 				}).catch(function (error) {
 					console.log(error);
 				});
@@ -191,8 +203,11 @@
 	
 				var path = this.state.currentPath;
 	
-				_rest2.default.del("file", { dir: path + name }).then(function (list) {
-					return _this4.onReload();
+				_rest2.default.del("file", { dir: path + name }).then(function () {
+					var updatenFiles = _this4.props.data.files.filter(function (file) {
+						return file.name !== name;
+					});
+					_this4.setState({ files: updatenFiles });
 				}).catch(function (error) {
 					console.log(error);
 				});
@@ -4334,7 +4349,7 @@
 	
 			var _this = _possibleConstructorReturn(this, (File.__proto__ || Object.getPrototypeOf(File)).call(this, props));
 	
-			_this.state = { renameFlag: false, changedName: props.data.name };
+			_this.state = { renameFlag: props.data.renameFlag, changedName: props.data.name };
 			_this.onOpen = _this.onOpen.bind(_this);
 			_this.onSelect = _this.onSelect.bind(_this);
 			_this.onStartRename = _this.onStartRename.bind(_this);
@@ -4342,6 +4357,7 @@
 			_this.onEndRename = _this.onEndRename.bind(_this);
 			_this.onTypeNewName = _this.onTypeNewName.bind(_this);
 			_this.editNameRender = _this.editNameRender.bind(_this);
+			_this.componentDidMount = _this.componentDidMount.bind(_this);
 			_this.componentDidUpdate = _this.componentDidUpdate.bind(_this);
 			return _this;
 		}
@@ -4440,6 +4456,13 @@
 						" "
 					)
 				);
+			}
+		}, {
+			key: "componentDidMount",
+			value: function componentDidMount() {
+				if (this.refs.inputChangeName) {
+					this.refs.inputChangeName.focus();
+				}
 			}
 		}, {
 			key: "componentDidUpdate",

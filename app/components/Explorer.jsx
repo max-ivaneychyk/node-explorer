@@ -44,11 +44,14 @@ class Explorer extends React.Component {
 		let dir = this.state.currentPath + nameNewFolder + "/";
 		Rest.post("file", { dir })
 			.then(list => {
-                this.setState({files: [].concat(this.state.files, {
-                	format: 'directory',
-					name: nameNewFolder,
-					path: nameNewFolder + '/'
-				})});
+                this.props.data.files.push({
+                    format: 'directory',
+                    name: nameNewFolder,
+                    renameFlag: true,
+                    path: nameNewFolder + '/'
+                });
+
+                this.setState({files: this.props.data.files});
             })
 			.catch(error => {
 				console.log(error);

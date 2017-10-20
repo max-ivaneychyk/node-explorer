@@ -3,7 +3,7 @@ import React from "react";
 class File extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { renameFlag: false, changedName: props.data.name };
+		this.state = { renameFlag: props.data.renameFlag, changedName: props.data.name };
 		this.onOpen = this.onOpen.bind(this);
 		this.onSelect = this.onSelect.bind(this);
 		this.onStartRename = this.onStartRename.bind(this);
@@ -11,6 +11,7 @@ class File extends React.Component {
 		this.onEndRename = this.onEndRename.bind(this);
 		this.onTypeNewName = this.onTypeNewName.bind(this);
 		this.editNameRender = this.editNameRender.bind(this);
+		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
 	}
 
@@ -88,7 +89,11 @@ class File extends React.Component {
 			</div>
 		);
 	}
-
+    componentDidMount() {
+        if (this.refs.inputChangeName) {
+            this.refs.inputChangeName.focus();
+        }
+	}
 	componentDidUpdate() {
 		if (this.refs.inputChangeName) {
 			this.refs.inputChangeName.focus();
