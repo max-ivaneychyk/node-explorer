@@ -1,17 +1,17 @@
+const DEV_SERVER_RUN = process.argv.join('').includes('webpack-dev-server');
+
 let NODE_ENV = 'development';
+
 let webpack = require('webpack');
 let PrettierPlugin = require("prettier-webpack-plugin");
-let path = require("path");
 let ExtractTextPlugin = require("extract-text-webpack-plugin");
 let WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 
 
-module.exports = {
+
+let config  = {
     entry: { // входная точка - исходный файл
-       main: [
-           'webpack-dev-server/client/index.js',
-          'webpack/hot/dev-server.js',
-       "./app/app.jsx"]
+       main: ["./app/app.jsx"]
     },
     output:{
         path: __dirname + '/public',     // путь к каталогу выходных файлов - папка public
@@ -79,7 +79,7 @@ module.exports = {
         new ExtractTextPlugin({
           filename: "[name].css",
           allChunks: true,
-          disable: true
+          disable: DEV_SERVER_RUN
         })
 /*        new PrettierPlugin(
             {
@@ -102,3 +102,12 @@ module.exports = {
         }
     }
 };
+
+if (DEV_SERVER_RUN) {
+    config.entry.main = [
+        'webpack-dev-server/client/index.js',
+        'webpack/hot/dev-server.js',]
+        .concat(config.entry.main);
+}
+
+module.exports = config;
