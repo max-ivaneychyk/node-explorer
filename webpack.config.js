@@ -8,12 +8,14 @@ let WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 
 module.exports = {
     entry: { // входная точка - исходный файл
-       bundle: "./app/app.jsx",
-       style: './app/less/index.less'
+       main: [
+           'webpack-dev-server/client/index.js',
+          'webpack/hot/dev-server.js',
+       "./app/app.jsx"]
     },
     output:{
-        path: path.join(__dirname, 'public'),     // путь к каталогу выходных файлов - папка public
-        publicPath: '/public/',
+        path: __dirname + '/public',     // путь к каталогу выходных файлов - папка public
+        publicPath: '/',
         filename: "[name].js"       // название создаваемого файла
     },
     resolve:{
@@ -75,7 +77,9 @@ module.exports = {
             NODE_ENV: JSON.stringify(NODE_ENV)
         }),
         new ExtractTextPlugin({
-          filename: "style.css"
+          filename: "[name].css",
+          allChunks: true,
+          disable: true
         })
 /*        new PrettierPlugin(
             {
@@ -89,12 +93,12 @@ module.exports = {
         )*/
     ],
     devServer: {
-        port: 9000,
-        contentBase: path.join(__dirname, "public"),
+        port: 8888,
+        hot: true,
+        contentBase: __dirname + "/public",
         proxy: {
-            "**": "http://localhost:3000"
-        },
-        historyApiFallback: true,
-        noInfo: true
+            '/files' : "http://localhost:3000",
+            '/file' : "http://localhost:3000"
+        }
     }
 };
