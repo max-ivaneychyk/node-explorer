@@ -13,6 +13,8 @@
     "winston": "^2.4.0"
   },
   "devDependencies": {
+    "extract-text-webpack-plugin": "^2.1.2",
+    "webpack-delete-after-emit": "^1.0.5",
     "autoprefixer-loader": "^3.2.0",
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
@@ -20,7 +22,6 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.24.1",
     "css-loader": "^0.28.7",
-    "extract-text-webpack-plugin": "^2.1.2",
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
     "lite-server": "^2.2.2",
@@ -29,7 +30,7 @@
     "prettier-webpack-plugin": "^0.2.2",
     "resolve-url-loader": "^2.1.0",
     "style-loader": "^0.18.2",
-    "webpack": "^1.14.0"
+    "webpack": "^3.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

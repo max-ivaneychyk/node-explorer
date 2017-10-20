@@ -7,6 +7,6 @@ const propsValues = {
 };
 
 ReactDOM.render(
-	<Explorer data={propsValues} />,
+	<Explorer data={propsValues}/>,
 	document.getElementById("container")
 );

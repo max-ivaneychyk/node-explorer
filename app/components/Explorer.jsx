@@ -4,8 +4,6 @@ import React from "react";
 import Header from "./Header";
 import File from "./File";
 
-import "../css/main.css";
-
 class Explorer extends React.Component {
 	constructor(props) {
 		super(props);
