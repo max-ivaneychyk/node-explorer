@@ -12,8 +12,11 @@ Install dependencies:
  `npm install`
  
  ## Usage
+ Build project:
+ `npm run build`
+ 
  Execute command on console :
- `npm run dev`
+ `npm start`
  
  And open page in browser: 
  `localhost:3000`

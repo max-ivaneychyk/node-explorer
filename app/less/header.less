@@ -1,17 +1,3 @@
-header li {
-    display: inline-block;
-    cursor: pointer;
-    margin-right: 20px;
-    transition: opacity 1s;
-}
-
-header li:active {
-    color: #61a0d8;
-}
-
-header menu {
-    margin: 0;
-}
 
 header {
     border-bottom: 1px solid #ebebeb;
@@ -27,6 +13,21 @@ header {
     position: -o-sticky;
     position: sticky;
     user-select: none;
+
+    menu {
+        margin: 0;
+    }
+
+    li {
+        display: inline-block;
+        cursor: pointer;
+        margin-right: 20px;
+        transition: opacity 1s;
+
+        &:active {
+            color: #61a0d8;
+        }
+    }
 }
 
 .explorer-path,
@@ -45,23 +46,29 @@ header {
 
 .search {
     left: 72%;
+
+    &.active {
+        width: 28%;
+        border: 1px solid #419acc;
+    }
 }
 
-.explorer-path.active {
-    width: 70%;
-    border: 1px solid #419acc;
+.explorer-path {
+    &.active {
+        width: 70%;
+        border: 1px solid #419acc;
+    }
 }
 
-.search.active {
-    width: 28%;
-    border: 1px solid #419acc;
-}
-apply.search input,
-.explorer-path input {
-    width: 100%;
-    border: 0;
-}
+.search,
+.explorer-path {
 
-input:focus {
-    outline-color: transparent !important;
+    input {
+        width: 100%;
+        border: 0;
+
+        &:focus {
+            outline-color: transparent !important;
+        }
+    }
 }

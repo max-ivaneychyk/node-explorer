@@ -7,8 +7,6 @@ let PrettierPlugin = require("prettier-webpack-plugin");
 let ExtractTextPlugin = require("extract-text-webpack-plugin");
 let WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 
-
-
 let config  = {
     entry: { // входная точка - исходный файл
        main: ["./app/app.jsx"]
@@ -68,8 +66,6 @@ let config  = {
         ]
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-        // output css folder and name file
         // остановить сборку при ошибках
         new webpack.NoErrorsPlugin(),
         // глобальная переменные для разработки: c NODE_ENV js файлах
@@ -108,6 +104,10 @@ if (DEV_SERVER_RUN) {
         'webpack-dev-server/client/index.js',
         'webpack/hot/dev-server.js',]
         .concat(config.entry.main);
+
+    config.plugins.push(
+       new webpack.HotModuleReplacementPlugin()
+    );
 }
 
 module.exports = config;
