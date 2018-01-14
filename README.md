@@ -1,7 +1,7 @@
 # node-explorer
 
 
-## Instalation
+## Installation
 Clone git repository:
 `git clone https://github.com/max-ivaneychyk/node-explorer.git`
 
